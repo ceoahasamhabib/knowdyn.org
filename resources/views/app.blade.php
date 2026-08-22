@@ -23,50 +23,65 @@
         <meta name="author" content="{{ \App\Models\SiteSetting::get('publisher_name', 'Knowledge Dynamics Publishing') }}">
 
         <!-- ── Search Engine Webmaster Verification ─────────── -->
-        @if($googleVerification = \App\Models\SiteSetting::get('seo_google_verification'))
+        @php
+            $googleVerification = \App\Models\SiteSetting::get('seo_google_verification');
+            $bingVerification = \App\Models\SiteSetting::get('seo_bing_verification');
+            $siteName = \App\Models\SiteSetting::get('site_name', 'Knowledge Dynamics');
+            $metaDesc = \App\Models\SiteSetting::get('seo_meta_description', 'Elevating global research with open access peer-reviewed journals, Crossref DOI allocation, and academic proofreading.');
+            $ogImage = \App\Models\SiteSetting::get('seo_og_image', asset('apple-touch-icon.png'));
+            $twitterHandle = \App\Models\SiteSetting::get('seo_twitter_handle', '@kdpub');
+            $gaId = \App\Models\SiteSetting::get('seo_google_analytics_id');
+            $customHeadScripts = \App\Models\SiteSetting::get('seo_custom_head_scripts', '');
+            $contactEmail = \App\Models\SiteSetting::get('contact_email', 'editor@kdpub.com');
+            $publisherName = \App\Models\SiteSetting::get('publisher_name', 'Knowledge Dynamics Publishing');
+
+            $schemaData = [
+                '@context' => 'https://schema.org',
+                '@type' => 'ResearchOrganization',
+                'name' => $siteName,
+                'alternateName' => 'KD Scholar',
+                'url' => url('/'),
+                'logo' => asset('favicon.svg'),
+                'description' => $metaDesc,
+                'email' => $contactEmail,
+                'publishingPrinciples' => url('/publish/open-access'),
+                'sameAs' => [
+                    'https://twitter.com/kdpub',
+                    'https://facebook.com/kdpub',
+                ],
+            ];
+        @endphp
+
+        @if(!empty($googleVerification))
             <meta name="google-site-verification" content="{{ $googleVerification }}">
         @endif
-        @if($bingVerification = \App\Models\SiteSetting::get('seo_bing_verification'))
+        @if(!empty($bingVerification))
             <meta name="msvalidate.01" content="{{ $bingVerification }}">
         @endif
 
         <!-- ── Open Graph / Social Sharing ───────────────────── -->
-        <meta property="og:site_name" content="{{ \App\Models\SiteSetting::get('site_name', 'Knowledge Dynamics') }}">
+        <meta property="og:site_name" content="{{ $siteName }}">
         <meta property="og:type" content="website">
         <meta property="og:url" content="{{ url()->current() }}">
-        <meta property="og:title" content="{{ \App\Models\SiteSetting::get('site_name', 'Knowledge Dynamics') }} — Global Open Access Academic Publishing">
-        <meta property="og:description" content="{{ \App\Models\SiteSetting::get('seo_meta_description', 'Elevating global research with open access peer-reviewed journals, Crossref DOI allocation, and academic proofreading.') }}">
-        <meta property="og:image" content="{{ \App\Models\SiteSetting::get('seo_og_image', asset('apple-touch-icon.png')) }}">
+        <meta property="og:title" content="{{ $siteName }} — Global Open Access Academic Publishing">
+        <meta property="og:description" content="{{ $metaDesc }}">
+        <meta property="og:image" content="{{ $ogImage }}">
 
         <!-- ── Twitter Card Metadata ────────────────────────── -->
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:site" content="{{ \App\Models\SiteSetting::get('seo_twitter_handle', '@kdpub') }}">
-        <meta name="twitter:creator" content="{{ \App\Models\SiteSetting::get('seo_twitter_handle', '@kdpub') }}">
-        <meta name="twitter:title" content="{{ \App\Models\SiteSetting::get('site_name', 'Knowledge Dynamics') }} — Global Open Access Academic Publishing">
-        <meta name="twitter:description" content="{{ \App\Models\SiteSetting::get('seo_meta_description', 'Elevating global research with open access peer-reviewed journals, Crossref DOI allocation, and academic proofreading.') }}">
-        <meta name="twitter:image" content="{{ \App\Models\SiteSetting::get('seo_og_image', asset('apple-touch-icon.png')) }}">
+        <meta name="twitter:site" content="{{ $twitterHandle }}">
+        <meta name="twitter:creator" content="{{ $twitterHandle }}">
+        <meta name="twitter:title" content="{{ $siteName }} — Global Open Access Academic Publishing">
+        <meta name="twitter:description" content="{{ $metaDesc }}">
+        <meta name="twitter:image" content="{{ $ogImage }}">
 
         <!-- ── Schema.org Scholarly Research Organization JSON-LD ── -->
         <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "ResearchOrganization",
-            "name": "{{ \App\Models\SiteSetting::get('site_name', 'Knowledge Dynamics') }}",
-            "alternateName": "KD Scholar",
-            "url": "{{ url('/') }}",
-            "logo": "{{ asset('favicon.svg') }}",
-            "description": "{{ \App\Models\SiteSetting::get('seo_meta_description', 'Global Open Access Academic Publishing & Research Platform') }}",
-            "email": "{{ \App\Models\SiteSetting::get('contact_email', 'editor@kdpub.com') }}",
-            "publishingPrinciples": "{{ url('/publish/open-access') }}",
-            "sameAs": [
-                "https://twitter.com/kdpub",
-                "https://facebook.com/kdpub"
-            ]
-        }
+        {!! json_encode($schemaData, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
         </script>
 
         <!-- ── Google Analytics 4 (GA4) ──────────────────────── -->
-        @if($gaId = \App\Models\SiteSetting::get('seo_google_analytics_id'))
+        @if(!empty($gaId))
             <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
             <script>
                 window.dataLayer = window.dataLayer || [];
@@ -77,7 +92,9 @@
         @endif
 
         <!-- ── Custom Head Scripts (Injected from Admin Settings) ── -->
-        {!! \App\Models\SiteSetting::get('seo_custom_head_scripts', '') !!}
+        @if(!empty($customHeadScripts))
+            {!! $customHeadScripts !!}
+        @endif
 
         <!-- ── Google Fonts ──────────────────────────────────── -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
