@@ -68,22 +68,27 @@ const journalsList = [
                 <div class="flex items-center justify-between h-16 lg:h-[72px]">
                     <!-- Brand Logo -->
                     <Link href="/" class="flex items-center gap-3 group shrink-0">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-blue-600 to-rose-600 p-0.5 shadow-md shadow-indigo-500/20 group-hover:scale-105 transition duration-300">
-                            <div class="w-full h-full bg-[#0a101f] rounded-[10px] flex items-center justify-center font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-rose-300 text-sm tracking-wider">
-                                KD
+                        <template v-if="page.props.branding?.logo">
+                            <img :src="page.props.branding.logo" :alt="page.props.branding?.site_name || 'Knowledge Dynamics'" class="h-10 lg:h-12 w-auto max-w-[240px] object-contain group-hover:scale-105 transition duration-300" />
+                        </template>
+                        <template v-else>
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-blue-600 to-rose-600 p-0.5 shadow-md shadow-indigo-500/20 group-hover:scale-105 transition duration-300">
+                                <div class="w-full h-full bg-[#0a101f] rounded-[10px] flex items-center justify-center font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-rose-300 text-sm tracking-wider">
+                                    KD
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <span class="font-extrabold text-lg lg:text-xl text-slate-900 tracking-tight flex items-center gap-1.5 whitespace-nowrap">
-                                Knowledge Dynamics
-                                <span class="px-1.5 py-0.5 text-[10px] font-bold bg-indigo-50 text-indigo-700 rounded-md border border-indigo-200">
-                                    Scholar
+                            <div>
+                                <span class="font-extrabold text-lg lg:text-xl text-slate-900 tracking-tight flex items-center gap-1.5 whitespace-nowrap">
+                                    {{ page.props.branding?.site_name || 'Knowledge Dynamics' }}
+                                    <span class="px-1.5 py-0.5 text-[10px] font-bold bg-indigo-50 text-indigo-700 rounded-md border border-indigo-200">
+                                        Scholar
+                                    </span>
                                 </span>
-                            </span>
-                            <span class="block text-[10px] text-slate-500 tracking-wider uppercase font-semibold whitespace-nowrap">
-                                Open Access Publishing & Research
-                            </span>
-                        </div>
+                                <span class="block text-[10px] text-slate-500 tracking-wider uppercase font-semibold whitespace-nowrap">
+                                    Open Access Publishing & Research
+                                </span>
+                            </div>
+                        </template>
                     </Link>
 
                     <!-- Desktop Mega Menu Items with Seamless Hover Bridge -->
@@ -298,20 +303,25 @@ const journalsList = [
                 <!-- Top Brand Header in Footer -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 pb-12 mb-12 border-b border-slate-800/80">
                     <div class="flex items-center gap-3.5">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 via-blue-600 to-rose-600 p-0.5 shadow-lg shadow-indigo-500/20">
-                            <div class="w-full h-full bg-[#0a101f] rounded-[10px] flex items-center justify-center font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-rose-300 text-base tracking-wider">
-                                KD
+                        <template v-if="page.props.branding?.logo_dark || page.props.branding?.logo">
+                            <img :src="page.props.branding.logo_dark || page.props.branding.logo" :alt="page.props.branding?.site_name || 'Knowledge Dynamics'" class="h-11 w-auto max-w-[260px] object-contain" />
+                        </template>
+                        <template v-else>
+                            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 via-blue-600 to-rose-600 p-0.5 shadow-lg shadow-indigo-500/20">
+                                <div class="w-full h-full bg-[#0a101f] rounded-[10px] flex items-center justify-center font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-rose-300 text-base tracking-wider">
+                                    KD
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <span class="text-white font-extrabold text-xl tracking-tight flex items-center gap-2 whitespace-nowrap">
-                                Knowledge Dynamics
-                                <span class="px-2 py-0.5 text-[10px] font-bold bg-indigo-500/20 text-indigo-300 rounded border border-indigo-500/30">
-                                    Scholar
+                            <div>
+                                <span class="text-white font-extrabold text-xl tracking-tight flex items-center gap-2 whitespace-nowrap">
+                                    {{ page.props.branding?.site_name || 'Knowledge Dynamics' }}
+                                    <span class="px-2 py-0.5 text-[10px] font-bold bg-indigo-500/20 text-indigo-300 rounded border border-indigo-500/30">
+                                        Scholar
+                                    </span>
                                 </span>
-                            </span>
-                            <div class="text-xs text-slate-400 mt-0.5">International Academic Publishing & Research Ecosystem</div>
-                        </div>
+                                <div class="text-xs text-slate-400 mt-0.5">International Academic Publishing & Research Ecosystem</div>
+                            </div>
+                        </template>
                     </div>
                     <div class="flex flex-wrap gap-3">
                         <Link

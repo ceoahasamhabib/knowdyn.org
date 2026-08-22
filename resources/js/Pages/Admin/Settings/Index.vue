@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 
@@ -10,40 +10,118 @@ const props = defineProps({
     },
 });
 
-const initialSettingsMap = {};
+const initialMap = {};
 props.settings.forEach(s => {
-    initialSettingsMap[s.key] = s.value || '';
+    initialMap[s.key] = s.value || '';
 });
 
-// Set sensible defaults if empty
-if (!initialSettingsMap.theme_preset) initialSettingsMap.theme_preset = 'oxford-navy';
-if (!initialSettingsMap.theme_primary_color) initialSettingsMap.theme_primary_color = '#0F2A4A';
-if (!initialSettingsMap.theme_accent_color) initialSettingsMap.theme_accent_color = '#BE123C';
-if (!initialSettingsMap.theme_font_sans) initialSettingsMap.theme_font_sans = 'Inter';
-if (!initialSettingsMap.theme_font_heading) initialSettingsMap.theme_font_heading = 'Playfair Display';
-if (!initialSettingsMap.theme_border_radius) initialSettingsMap.theme_border_radius = '12px';
+// Set sensible defaults
+if (!initialMap.theme_preset) initialMap.theme_preset = 'oxford-navy';
+if (!initialMap.theme_primary_color) initialMap.theme_primary_color = '#0F2A4A';
+if (!initialMap.theme_accent_color) initialMap.theme_accent_color = '#BE123C';
+if (!initialMap.theme_font_sans) initialMap.theme_font_sans = 'Inter';
+if (!initialMap.theme_font_heading) initialMap.theme_font_heading = 'Playfair Display';
+if (!initialMap.theme_border_radius) initialMap.theme_border_radius = '12px';
 
-if (!initialSettingsMap.site_name) initialSettingsMap.site_name = 'Knowledge Dynamics';
-if (!initialSettingsMap.publisher_name) initialSettingsMap.publisher_name = 'Knowledge Dynamics Publishing';
-if (!initialSettingsMap.doi_prefix) initialSettingsMap.doi_prefix = '10.69598';
-if (!initialSettingsMap.contact_email) initialSettingsMap.contact_email = 'editor@kdpub.com';
+if (!initialMap.site_name) initialMap.site_name = 'Knowledge Dynamics';
+if (!initialMap.publisher_name) initialMap.publisher_name = 'Knowledge Dynamics Publishing';
+if (!initialMap.doi_prefix) initialMap.doi_prefix = '10.69598';
+if (!initialMap.contact_email) initialMap.contact_email = 'editor@kdpub.com';
 
-// SEO Defaults
-if (!initialSettingsMap.seo_meta_description) {
-    initialSettingsMap.seo_meta_description = 'Knowledge Dynamics is an international academic publisher for peer-reviewed open access journals, books, scholar profiles, and editorial proofreading services.';
+if (!initialMap.brand_favicon) initialMap.brand_favicon = '/favicon.svg';
+if (!initialMap.seo_meta_description) {
+    initialMap.seo_meta_description = 'Knowledge Dynamics is an international academic publisher for peer-reviewed open access journals, books, scholar profiles, and editorial proofreading services.';
 }
-if (!initialSettingsMap.seo_meta_keywords) {
-    initialSettingsMap.seo_meta_keywords = 'academic publishing, open access journals, peer review, crossref doi, proofreading, research papers, knowledge dynamics, kdpub, health dynamics';
+if (!initialMap.seo_meta_keywords) {
+    initialMap.seo_meta_keywords = 'academic publishing, open access journals, peer review, crossref doi, proofreading, research papers, knowledge dynamics, kdpub, medical journals, health dynamics';
 }
-if (!initialSettingsMap.seo_robots) initialSettingsMap.seo_robots = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
-if (!initialSettingsMap.seo_twitter_handle) initialSettingsMap.seo_twitter_handle = '@kdpub';
-if (!initialSettingsMap.seo_og_image) initialSettingsMap.seo_og_image = '/apple-touch-icon.png';
+if (!initialMap.seo_robots) initialMap.seo_robots = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+if (!initialMap.seo_twitter_handle) initialMap.seo_twitter_handle = '@kdpub';
+if (!initialMap.seo_og_image) initialMap.seo_og_image = '/apple-touch-icon.png';
 
 const form = useForm({
-    settings: initialSettingsMap,
+    settings: { ...initialMap },
+    brand_logo: null,
+    brand_logo_dark: null,
+    brand_favicon: null,
+    seo_og_image: null,
+    remove_brand_logo: false,
+    remove_brand_logo_dark: false,
+    remove_brand_favicon: false,
 });
 
-const activeTab = ref('theme');
+const activeTab = ref('branding');
+
+// Previews for uploaded files
+const logoPreview = ref(initialMap.brand_logo || null);
+const logoDarkPreview = ref(initialMap.brand_logo_dark || null);
+const faviconPreview = ref(initialMap.brand_favicon || '/favicon.svg');
+const ogImagePreview = ref(initialMap.seo_og_image || '/apple-touch-icon.png');
+
+// File inputs refs
+const logoInput = ref(null);
+const logoDarkInput = ref(null);
+const faviconInput = ref(null);
+const ogImageInput = ref(null);
+
+const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        form.brand_logo = file;
+        form.remove_brand_logo = false;
+        logoPreview.value = URL.createObjectURL(file);
+    }
+};
+
+const removeLogo = () => {
+    form.brand_logo = null;
+    form.remove_brand_logo = true;
+    form.settings.brand_logo = '';
+    logoPreview.value = null;
+    if (logoInput.value) logoInput.value.value = '';
+};
+
+const handleLogoDarkChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        form.brand_logo_dark = file;
+        form.remove_brand_logo_dark = false;
+        logoDarkPreview.value = URL.createObjectURL(file);
+    }
+};
+
+const removeLogoDark = () => {
+    form.brand_logo_dark = null;
+    form.remove_brand_logo_dark = true;
+    form.settings.brand_logo_dark = '';
+    logoDarkPreview.value = null;
+    if (logoDarkInput.value) logoDarkInput.value.value = '';
+};
+
+const handleFaviconChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        form.brand_favicon = file;
+        form.remove_brand_favicon = false;
+        faviconPreview.value = URL.createObjectURL(file);
+    }
+};
+
+const removeFavicon = () => {
+    form.brand_favicon = null;
+    form.remove_brand_favicon = true;
+    form.settings.brand_favicon = '/favicon.svg';
+    faviconPreview.value = '/favicon.svg';
+    if (faviconInput.value) faviconInput.value.value = '';
+};
+
+const handleOgImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        form.seo_og_image = file;
+        ogImagePreview.value = URL.createObjectURL(file);
+    }
+};
 
 const themePresets = [
     {
@@ -101,8 +179,16 @@ const applyPreset = (preset) => {
     form.settings.theme_font_heading = preset.heading;
 };
 
+const descLength = computed(() => (form.settings.seo_meta_description || '').length);
+
 const submit = () => {
-    form.post(route('admin.settings.update'));
+    form.post(route('admin.settings.update'), {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            // Updated successfully
+        },
+    });
 };
 </script>
 
@@ -111,138 +197,574 @@ const submit = () => {
 
     <AdminLayout>
         <template #header>
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 w-full">
                 <div>
-                    <h1 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-indigo-50 text-indigo-700 rounded-md border border-indigo-200">
+                            Central System Management
+                        </span>
+                        <span class="text-xs text-slate-400">•</span>
+                        <span class="text-xs text-slate-500 font-medium">KD Core Architecture</span>
+                    </div>
+                    <h1 class="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
                         <span>⚙️</span> System, SEO & Branding Settings
                     </h1>
-                    <p class="text-xs text-gray-500">Live customization of brand identity, SEO meta engine, Google verification, GA4 analytics, and Crossref DOI.</p>
                 </div>
 
-                <!-- Navigation Tabs -->
-                <div class="flex items-center gap-2 bg-gray-100 p-1 rounded-xl">
+                <!-- Navigation Tabs Pills -->
+                <div class="flex items-center gap-1.5 bg-slate-200/70 p-1.5 rounded-2xl overflow-x-auto">
                     <button
                         type="button"
-                        @click="activeTab = 'theme'"
-                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition"
-                        :class="activeTab === 'theme' ? 'bg-white text-navy-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'"
+                        @click="activeTab = 'branding'"
+                        class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 whitespace-nowrap"
+                        :class="activeTab === 'branding' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
                     >
-                        🎨 Theme & Typography
+                        <span>🖼️</span> Brand Logos & Favicon
                     </button>
                     <button
                         type="button"
                         @click="activeTab = 'seo'"
-                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"
-                        :class="activeTab === 'seo' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'"
+                        class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 whitespace-nowrap"
+                        :class="activeTab === 'seo' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
                     >
-                        <span>🔍</span> SEO & Webmaster
+                        <span>🔍</span> SEO & Social Meta
                     </button>
                     <button
                         type="button"
-                        @click="activeTab = 'branding'"
-                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition"
-                        :class="activeTab === 'branding' ? 'bg-white text-navy-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'"
+                        @click="activeTab = 'webmaster'"
+                        class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 whitespace-nowrap"
+                        :class="activeTab === 'webmaster' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
                     >
-                        🏛️ Identity & DOI
+                        <span>📊</span> Webmaster & Analytics
+                    </button>
+                    <button
+                        type="button"
+                        @click="activeTab = 'theme'"
+                        class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 whitespace-nowrap"
+                        :class="activeTab === 'theme' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
+                    >
+                        <span>🎨</span> Theme & Colors
+                    </button>
+                    <button
+                        type="button"
+                        @click="activeTab = 'doi'"
+                        class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 whitespace-nowrap"
+                        :class="activeTab === 'doi' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
+                    >
+                        <span>🏛️</span> Identity & Crossref
                     </button>
                 </div>
             </div>
         </template>
 
-        <div class="max-w-5xl mx-auto space-y-8">
+        <div class="max-w-7xl mx-auto space-y-8 pb-16">
             <form @submit.prevent="submit" class="space-y-8">
                 <!-- ═══════════════════════════════════════════════════════════ -->
-                <!-- TAB 1: THEME & TYPOGRAPHY                                   -->
+                <!-- TAB 1: BRAND LOGOS & FAVICON UPLOAD                         -->
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <div v-show="activeTab === 'branding'" class="space-y-8">
+                    <!-- Brand Identity Card -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                        <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div>
+                                <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                                    <span>🖼️</span> Platform Logos & Favicon Asset Management
+                                </h2>
+                                <p class="text-xs text-slate-500 mt-0.5">Upload custom logos and icons for light navigation bars, dark footers, mobile home screens, and browser tabs.</p>
+                            </div>
+                            <span class="text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full shrink-0">
+                                ✓ Live Asset Sync Active
+                            </span>
+                        </div>
+
+                        <!-- 3-Column Upload Grids -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- 1. Primary Header Logo (Light Canvas) -->
+                            <div class="rounded-2xl border border-slate-200/90 bg-slate-50/50 p-5 flex flex-col justify-between space-y-4 hover:border-indigo-300 transition">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                                            <span>☀️</span> Primary Logo
+                                        </label>
+                                        <span class="text-[10px] text-slate-400 font-mono">SVG, PNG, WebP</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 mb-4">Used on light public navigation bars and headers.</p>
+
+                                    <!-- Preview Box Light Background -->
+                                    <div class="w-full h-32 rounded-xl bg-white border border-slate-200 flex items-center justify-center p-4 relative overflow-hidden shadow-inner group">
+                                        <template v-if="logoPreview">
+                                            <img :src="logoPreview" alt="Primary Logo Preview" class="max-h-20 max-w-full object-contain" />
+                                        </template>
+                                        <template v-else>
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-blue-600 to-rose-600 p-0.5 shadow-sm">
+                                                    <div class="w-full h-full bg-[#0a101f] rounded-[8px] flex items-center justify-center font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-rose-300 text-xs">
+                                                        KD
+                                                    </div>
+                                                </div>
+                                                <span class="font-bold text-xs text-slate-800">Knowledge Dynamics</span>
+                                            </div>
+                                        </template>
+
+                                        <div v-if="logoPreview" class="absolute top-2 right-2 flex gap-1">
+                                            <button
+                                                type="button"
+                                                @click="removeLogo"
+                                                class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-md text-[10px] font-bold shadow-xs transition"
+                                            >
+                                                ✕ Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <input
+                                        ref="logoInput"
+                                        type="file"
+                                        accept="image/svg+xml,image/png,image/jpeg,image/webp"
+                                        @change="handleLogoChange"
+                                        class="hidden"
+                                        id="brand_logo_file"
+                                    />
+                                    <label
+                                        for="brand_logo_file"
+                                        class="w-full py-2.5 px-4 rounded-xl border border-indigo-200 bg-indigo-50/80 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition shadow-xs"
+                                    >
+                                        <span>📁</span> Upload Primary Logo
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 2. Dark / Footer Logo (Dark Canvas) -->
+                            <div class="rounded-2xl border border-slate-200/90 bg-slate-50/50 p-5 flex flex-col justify-between space-y-4 hover:border-indigo-300 transition">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                                            <span>🌙</span> Dark Mode / Footer Logo
+                                        </label>
+                                        <span class="text-[10px] text-slate-400 font-mono">SVG, PNG, WebP</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 mb-4">Used on dark footer and publisher cockpit sidebar.</p>
+
+                                    <!-- Preview Box Dark Background -->
+                                    <div class="w-full h-32 rounded-xl bg-[#070c18] border border-slate-800 flex items-center justify-center p-4 relative overflow-hidden shadow-inner group">
+                                        <template v-if="logoDarkPreview">
+                                            <img :src="logoDarkPreview" alt="Dark Logo Preview" class="max-h-20 max-w-full object-contain" />
+                                        </template>
+                                        <template v-else-if="logoPreview">
+                                            <img :src="logoPreview" alt="Logo Preview" class="max-h-20 max-w-full object-contain brightness-110" />
+                                        </template>
+                                        <template v-else>
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-blue-600 to-rose-600 p-0.5 shadow-sm">
+                                                    <div class="w-full h-full bg-[#0a101f] rounded-[8px] flex items-center justify-center font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-rose-300 text-xs">
+                                                        KD
+                                                    </div>
+                                                </div>
+                                                <span class="font-bold text-xs text-white">Knowledge Dynamics</span>
+                                            </div>
+                                        </template>
+
+                                        <div v-if="logoDarkPreview" class="absolute top-2 right-2 flex gap-1">
+                                            <button
+                                                type="button"
+                                                @click="removeLogoDark"
+                                                class="px-2 py-1 bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800 rounded-md text-[10px] font-bold shadow-xs transition"
+                                            >
+                                                ✕ Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <input
+                                        ref="logoDarkInput"
+                                        type="file"
+                                        accept="image/svg+xml,image/png,image/jpeg,image/webp"
+                                        @change="handleLogoDarkChange"
+                                        class="hidden"
+                                        id="brand_logo_dark_file"
+                                    />
+                                    <label
+                                        for="brand_logo_dark_file"
+                                        class="w-full py-2.5 px-4 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition shadow-xs"
+                                    >
+                                        <span>📁</span> Upload Dark Logo
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 3. Favicon & Web App Icon -->
+                            <div class="rounded-2xl border border-slate-200/90 bg-slate-50/50 p-5 flex flex-col justify-between space-y-4 hover:border-indigo-300 transition">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                                            <span>⭐</span> Favicon & Tab Icon
+                                        </label>
+                                        <span class="text-[10px] text-slate-400 font-mono">SVG, ICO, PNG</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 mb-4">Displayed in browser tabs, bookmarks, and PWA.</p>
+
+                                    <!-- Browser Tab Simulation Preview -->
+                                    <div class="w-full h-32 rounded-xl bg-slate-200/70 border border-slate-300/80 p-3 flex flex-col justify-between shadow-inner">
+                                        <!-- Mock Browser Tab -->
+                                        <div class="bg-white rounded-t-lg px-3 py-2 border-b border-slate-200 flex items-center gap-2 shadow-xs max-w-[220px]">
+                                            <img :src="faviconPreview" alt="Favicon" class="w-4 h-4 object-contain rounded-xs" />
+                                            <span class="text-[11px] font-bold text-slate-800 truncate">{{ form.settings.site_name || 'Knowledge Dynamics' }}</span>
+                                            <span class="text-[9px] text-slate-400 ml-auto">✕</span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between text-[10px] text-slate-500 font-mono px-1">
+                                            <span>Direct: /favicon.svg</span>
+                                            <button
+                                                v-if="faviconPreview !== '/favicon.svg'"
+                                                type="button"
+                                                @click="removeFavicon"
+                                                class="text-rose-600 font-bold hover:underline"
+                                            >
+                                                Reset Default
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <input
+                                        ref="faviconInput"
+                                        type="file"
+                                        accept="image/svg+xml,image/x-icon,image/vnd.microsoft.icon,image/png"
+                                        @change="handleFaviconChange"
+                                        class="hidden"
+                                        id="brand_favicon_file"
+                                    />
+                                    <label
+                                        for="brand_favicon_file"
+                                        class="w-full py-2.5 px-4 rounded-xl border border-indigo-200 bg-indigo-50/80 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition shadow-xs"
+                                    >
+                                        <span>📁</span> Upload Favicon (.svg/.ico)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Real-Time SERP & Social Sharing Previews -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Google Search Preview -->
+                        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                                    <span>🔎</span> Google Search Result Preview (SERP)
+                                </h3>
+                                <span class="text-[10px] text-slate-400 font-mono">Real-time simulation</span>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5 font-sans">
+                                <div class="flex items-center gap-2 text-xs text-slate-600">
+                                    <img :src="faviconPreview" class="w-4 h-4 rounded-full border border-slate-200" />
+                                    <span class="font-medium text-slate-800">{{ form.settings.site_name || 'Knowledge Dynamics' }}</span>
+                                    <span class="text-slate-400 text-[10px]">https://kdpub.com</span>
+                                </div>
+                                <h4 class="text-base text-indigo-700 hover:underline font-semibold line-clamp-1 cursor-pointer">
+                                    {{ form.settings.site_name || 'Knowledge Dynamics' }} — Global Open Access Academic Publishing
+                                </h4>
+                                <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                                    {{ form.settings.seo_meta_description || 'Knowledge Dynamics is an international academic publisher for peer-reviewed open access journals, books, scholar profiles, and editorial proofreading services.' }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- OpenGraph Social Share Card Preview -->
+                        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                                    <span>🌐</span> Facebook / LinkedIn / X Social Preview
+                                </h3>
+                                <div>
+                                    <input
+                                        ref="ogImageInput"
+                                        type="file"
+                                        accept="image/*"
+                                        @change="handleOgImageChange"
+                                        class="hidden"
+                                        id="seo_og_image_file"
+                                    />
+                                    <label
+                                        for="seo_og_image_file"
+                                        class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer flex items-center gap-1"
+                                    >
+                                        <span>📷 Change Cover Image</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 font-sans shadow-xs">
+                                <div class="h-32 bg-slate-900 relative overflow-hidden flex items-center justify-center">
+                                    <img :src="ogImagePreview" alt="OG Image" class="w-full h-full object-cover" />
+                                </div>
+                                <div class="p-3.5 space-y-1">
+                                    <span class="text-[10px] font-mono uppercase text-slate-400 tracking-wider">KDPUB.COM</span>
+                                    <h5 class="text-xs font-bold text-slate-900 line-clamp-1">
+                                        {{ form.settings.site_name || 'Knowledge Dynamics' }} — Academic Research & Journals
+                                    </h5>
+                                    <p class="text-[11px] text-slate-500 line-clamp-1">
+                                        {{ form.settings.seo_meta_description }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <!-- TAB 2: SEO & SOCIAL METADATA                                -->
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <div v-show="activeTab === 'seo'" class="space-y-8">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                        <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div>
+                                <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                                    <span>🔍</span> Global Search Engine Optimization (SEO)
+                                </h2>
+                                <p class="text-xs text-slate-500 mt-0.5">Control indexing, meta descriptions, search ranking keywords, and dynamic XML sitemap links.</p>
+                            </div>
+                            <a
+                                href="/sitemap.xml"
+                                target="_blank"
+                                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition shadow-xs"
+                            >
+                                <span>🗺️ Dynamic Sitemap.xml</span>
+                                <span class="font-mono">↗</span>
+                            </a>
+                        </div>
+
+                        <div class="space-y-6">
+                            <!-- Meta Description with live counter -->
+                            <div>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label class="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                        Global Meta Description
+                                    </label>
+                                    <span
+                                        class="text-xs font-mono font-bold"
+                                        :class="descLength >= 120 && descLength <= 160 ? 'text-emerald-600' : 'text-amber-600'"
+                                    >
+                                        {{ descLength }} / 160 chars (Recommended: 120-160)
+                                    </span>
+                                </div>
+                                <textarea
+                                    v-model="form.settings.seo_meta_description"
+                                    rows="3"
+                                    class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 focus:outline-none leading-relaxed transition"
+                                    placeholder="Enter an authoritative description that represents Knowledge Dynamics in search engine results..."
+                                ></textarea>
+                            </div>
+
+                            <!-- Meta Keywords -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                    Global Meta Keywords (Comma Separated)
+                                </label>
+                                <input
+                                    v-model="form.settings.seo_meta_keywords"
+                                    type="text"
+                                    class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 focus:outline-none transition"
+                                    placeholder="e.g. academic publishing, open access journals, peer review, crossref doi, proofreading, research papers, knowledge dynamics"
+                                />
+                            </div>
+
+                            <!-- Twitter Handle & Robots Directive -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                        Twitter / X Publisher Handle
+                                    </label>
+                                    <input
+                                        v-model="form.settings.seo_twitter_handle"
+                                        type="text"
+                                        class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs font-mono focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 focus:outline-none transition"
+                                        placeholder="@kdpub"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                        Search Engine Robots Directive
+                                    </label>
+                                    <select
+                                        v-model="form.settings.seo_robots"
+                                        class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs font-mono focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 focus:outline-none transition"
+                                    >
+                                        <option value="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">index, follow (Standard — Fully Index Content)</option>
+                                        <option value="noindex, nofollow">noindex, nofollow (Disallow Search Engines)</option>
+                                        <option value="noindex, follow">noindex, follow (Follow Links Only)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <!-- TAB 3: WEBMASTER TOOLS & ANALYTICS                          -->
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <div v-show="activeTab === 'webmaster'" class="space-y-8">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                        <div class="border-b border-slate-100 pb-4">
+                            <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                                <span>📊</span> Webmaster Verification & Google Analytics 4
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-0.5">Authenticate domain ownership with Google Search Console and Bing Webmaster, and track live visitor metrics.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                    Google Site Verification
+                                </label>
+                                <input
+                                    v-model="form.settings.seo_google_verification"
+                                    type="text"
+                                    class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs font-mono focus:ring-2 focus:ring-indigo-600 focus:outline-none transition"
+                                    placeholder="google-site-verification token..."
+                                />
+                                <p class="text-[10px] text-slate-400 mt-1">HTML meta tag token from Google Search Console.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                    Bing Webmaster Verification
+                                </label>
+                                <input
+                                    v-model="form.settings.seo_bing_verification"
+                                    type="text"
+                                    class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs font-mono focus:ring-2 focus:ring-indigo-600 focus:outline-none transition"
+                                    placeholder="msvalidate.01 token..."
+                                />
+                                <p class="text-[10px] text-slate-400 mt-1">Auth token from Bing Webmaster Tools.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                    Google Analytics 4 (GA4 ID)
+                                </label>
+                                <input
+                                    v-model="form.settings.seo_google_analytics_id"
+                                    type="text"
+                                    class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs font-mono focus:ring-2 focus:ring-indigo-600 focus:outline-none transition"
+                                    placeholder="G-XXXXXXXXXX"
+                                />
+                                <p class="text-[10px] text-slate-400 mt-1">Automatically injects gtag.js script in document head.</p>
+                            </div>
+                        </div>
+
+                        <!-- Custom Tracking Scripts -->
+                        <div class="pt-2">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                Custom Header Tracking Scripts (Meta Pixel, Hotjar, Custom Scripts)
+                            </label>
+                            <textarea
+                                v-model="form.settings.seo_custom_head_scripts"
+                                rows="4"
+                                class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs font-mono focus:ring-2 focus:ring-indigo-600 focus:outline-none transition"
+                                placeholder="<!-- Paste custom tracking tags, Facebook Pixel, or external verification scripts here -->"
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <!-- TAB 4: THEME, COLORS & TYPOGRAPHY                           -->
                 <!-- ═══════════════════════════════════════════════════════════ -->
                 <div v-show="activeTab === 'theme'" class="space-y-8">
-                    <!-- Global Brand Theme & Color Presets -->
-                    <div class="bg-white rounded-2xl border border-gray-200/80 p-6 md:p-8 shadow-sm space-y-6">
-                        <div class="border-b border-gray-100 pb-3 flex items-center justify-between">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                        <div class="border-b border-slate-100 pb-4 flex items-center justify-between">
                             <div>
-                                <h2 class="text-sm font-bold uppercase tracking-wider text-navy-900 flex items-center gap-2">
-                                    🎨 Global Brand Theme & Color Presets
+                                <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                                    <span>🎨</span> Global Brand Theme & Color Palettes
                                 </h2>
-                                <p class="text-xs text-gray-500">Choose a curated luxury palette or define custom brand HEX colors.</p>
+                                <p class="text-xs text-slate-500 mt-0.5">Select a curated academic luxury palette or define custom brand HEX colors.</p>
                             </div>
-                            <span class="text-[11px] font-mono font-semibold bg-navy-50 text-navy-800 px-2.5 py-0.5 rounded-full border border-navy-200">
+                            <span class="text-[11px] font-mono font-semibold bg-indigo-50 text-indigo-800 px-3 py-1 rounded-full border border-indigo-200">
                                 Active: {{ form.settings.theme_preset }}
                             </span>
                         </div>
 
-                        <!-- Preset Cards Grid -->
+                        <!-- Preset Cards -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div
                                 v-for="p in themePresets"
                                 :key="p.id"
                                 @click="applyPreset(p)"
                                 class="p-4 rounded-xl border cursor-pointer transition-all duration-200 relative overflow-hidden"
-                                :class="form.settings.theme_preset === p.id ? 'border-navy-700 bg-navy-50/40 ring-2 ring-navy-700 shadow-sm' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/50'"
+                                :class="form.settings.theme_preset === p.id ? 'border-indigo-600 bg-indigo-50/40 ring-2 ring-indigo-600 shadow-sm' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'"
                             >
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="font-bold text-xs text-gray-900">{{ p.name }}</span>
+                                    <span class="font-bold text-xs text-slate-900">{{ p.name }}</span>
                                     <div class="flex items-center gap-1.5">
                                         <span class="w-4 h-4 rounded-full border border-white shadow-sm" :style="{ backgroundColor: p.primary }"></span>
                                         <span class="w-4 h-4 rounded-full border border-white shadow-sm" :style="{ backgroundColor: p.accent }"></span>
                                     </div>
                                 </div>
-                                <p class="text-[11px] text-gray-500 line-clamp-1 mb-3">{{ p.desc }}</p>
-                                <div class="text-[10px] text-gray-400 font-mono">
-                                    Font: {{ p.heading }} + {{ p.sans }}
+                                <p class="text-[11px] text-slate-500 line-clamp-1 mb-2">{{ p.desc }}</p>
+                                <div class="text-[10px] text-slate-400 font-mono">
+                                    {{ p.heading }} + {{ p.sans }}
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Custom Color Pickers -->
-                        <div class="pt-4 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- Custom Colors -->
+                        <div class="pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Primary Brand Color (HEX)</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Primary Brand Color (HEX)</label>
                                 <div class="flex items-center gap-3">
                                     <input
                                         v-model="form.settings.theme_primary_color"
                                         type="color"
-                                        class="h-9 w-12 rounded cursor-pointer border border-gray-300 p-0.5"
+                                        class="h-10 w-14 rounded-lg cursor-pointer border border-slate-300 p-0.5"
                                     />
                                     <input
                                         v-model="form.settings.theme_primary_color"
                                         type="text"
-                                        class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-navy-600 focus:outline-none"
+                                        class="flex-1 border border-slate-300 rounded-xl px-4 py-2.5 text-xs font-mono focus:ring-2 focus:ring-indigo-600 focus:outline-none"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Accent Interaction Color (HEX)</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Accent Interaction Color (HEX)</label>
                                 <div class="flex items-center gap-3">
                                     <input
                                         v-model="form.settings.theme_accent_color"
                                         type="color"
-                                        class="h-9 w-12 rounded cursor-pointer border border-gray-300 p-0.5"
+                                        class="h-10 w-14 rounded-lg cursor-pointer border border-slate-300 p-0.5"
                                     />
                                     <input
                                         v-model="form.settings.theme_accent_color"
                                         type="text"
-                                        class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-navy-600 focus:outline-none"
+                                        class="flex-1 border border-slate-300 rounded-xl px-4 py-2.5 text-xs font-mono focus:ring-2 focus:ring-indigo-600 focus:outline-none"
                                     />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Typography & UI Geometry -->
-                    <div class="bg-white rounded-2xl border border-gray-200/80 p-6 md:p-8 shadow-sm space-y-6">
-                        <div class="border-b border-gray-100 pb-3">
-                            <h2 class="text-sm font-bold uppercase tracking-wider text-navy-900 flex items-center gap-2">
-                                🖋️ Typography & UI Geometry
+                    <!-- Typography & Geometry -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                        <div class="border-b border-slate-100 pb-4">
+                            <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                                <span>🖋️</span> Typography & UI Geometry
                             </h2>
-                            <p class="text-xs text-gray-500">Live Google Fonts pairings and corner radius geometry across buttons and cards.</p>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Body Text Font</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Body Text Font</label>
                                 <select
                                     v-model="form.settings.theme_font_sans"
-                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-navy-600 focus:outline-none font-medium"
+                                    class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs focus:ring-2 focus:ring-indigo-600 focus:outline-none font-medium"
                                 >
                                     <option value="Inter">Inter (Sleek Clean Modern)</option>
                                     <option value="Plus Jakarta Sans">Plus Jakarta Sans (High-End SaaS)</option>
@@ -252,10 +774,10 @@ const submit = () => {
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Editorial Heading Font</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Editorial Heading Font</label>
                                 <select
                                     v-model="form.settings.theme_font_heading"
-                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-navy-600 focus:outline-none font-medium"
+                                    class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs focus:ring-2 focus:ring-indigo-600 focus:outline-none font-medium"
                                 >
                                     <option value="Playfair Display">Playfair Display (Authoritative Serif)</option>
                                     <option value="Merriweather">Merriweather (Classic Academic)</option>
@@ -265,10 +787,10 @@ const submit = () => {
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Element Border Radius</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Element Border Radius</label>
                                 <select
                                     v-model="form.settings.theme_border_radius"
-                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-navy-600 focus:outline-none font-medium"
+                                    class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs focus:ring-2 focus:ring-indigo-600 focus:outline-none font-medium"
                                 >
                                     <option value="8px">8px (Sleek Professional)</option>
                                     <option value="12px">12px (Modern SaaS Standard)</option>
@@ -281,270 +803,81 @@ const submit = () => {
                 </div>
 
                 <!-- ═══════════════════════════════════════════════════════════ -->
-                <!-- TAB 2: SEO, META TAGS & WEBMASTER VERIFICATION             -->
+                <!-- TAB 5: PLATFORM IDENTITY & CROSSREF DOI                     -->
                 <!-- ═══════════════════════════════════════════════════════════ -->
-                <div v-show="activeTab === 'seo'" class="space-y-8">
-                    <!-- Global SEO & Meta Tags Card -->
-                    <div class="bg-white rounded-2xl border border-gray-200/80 p-6 md:p-8 shadow-sm space-y-6">
-                        <div class="border-b border-gray-100 pb-3 flex items-center justify-between">
-                            <div>
-                                <h2 class="text-sm font-bold uppercase tracking-wider text-indigo-900 flex items-center gap-2">
-                                    🔍 Global Search Engine Optimization (SEO)
-                                </h2>
-                                <p class="text-xs text-gray-500">Configure global metadata, search engine crawling rules, and social share previews.</p>
-                            </div>
-                            <a
-                                href="/sitemap.xml"
-                                target="_blank"
-                                class="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-bold transition"
-                            >
-                                <span>🗺️ View Sitemap.xml</span>
-                                <span class="font-mono">↗</span>
-                            </a>
-                        </div>
-
-                        <div class="space-y-5">
-                            <!-- Meta Description -->
-                            <div>
-                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Global Meta Description (Max 160 Characters)</label>
-                                <textarea
-                                    v-model="form.settings.seo_meta_description"
-                                    rows="3"
-                                    class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs focus:ring-2 focus:ring-indigo-600 focus:outline-none leading-relaxed"
-                                    placeholder="Enter a compelling academic description for Google search results..."
-                                ></textarea>
-                                <p class="text-[11px] text-gray-400 mt-1">Characters: {{ (form.settings.seo_meta_description || '').length }} / 160</p>
-                            </div>
-
-                            <!-- Meta Keywords -->
-                            <div>
-                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Global Meta Keywords (Comma Separated)</label>
-                                <input
-                                    v-model="form.settings.seo_meta_keywords"
-                                    type="text"
-                                    class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs focus:ring-2 focus:ring-indigo-600 focus:outline-none"
-                                    placeholder="e.g. academic publishing, open access, peer review, crossref doi, kdpub"
-                                />
-                            </div>
-
-                            <!-- Social OpenGraph Image & Twitter -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Social Share Image URL (og:image)</label>
-                                    <input
-                                        v-model="form.settings.seo_og_image"
-                                        type="text"
-                                        class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono focus:ring-2 focus:ring-indigo-600 focus:outline-none"
-                                        placeholder="/apple-touch-icon.png or full https://... URL"
-                                    />
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Twitter / X Handle</label>
-                                    <input
-                                        v-model="form.settings.seo_twitter_handle"
-                                        type="text"
-                                        class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs focus:ring-2 focus:ring-indigo-600 focus:outline-none font-mono"
-                                        placeholder="@kdpub"
-                                    />
-                                </div>
-                            </div>
-
-                            <!-- Search Engine Robots Directive -->
-                            <div>
-                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Search Engine Robots Indexing Directive</label>
-                                <select
-                                    v-model="form.settings.seo_robots"
-                                    class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs focus:ring-2 focus:ring-indigo-600 focus:outline-none font-mono"
-                                >
-                                    <option value="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">index, follow (Recommended — Fully Indexed)</option>
-                                    <option value="noindex, nofollow">noindex, nofollow (Disallow Indexing)</option>
-                                    <option value="noindex, follow">noindex, follow (Index Links Only)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Webmaster Verification & GA4 Analytics -->
-                    <div class="bg-white rounded-2xl border border-gray-200/80 p-6 md:p-8 shadow-sm space-y-6">
-                        <div class="border-b border-gray-100 pb-3">
-                            <h2 class="text-sm font-bold uppercase tracking-wider text-indigo-900 flex items-center gap-2">
-                                📊 Webmaster Verification & Google Analytics
+                <div v-show="activeTab === 'doi'" class="space-y-8">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                        <div class="border-b border-slate-100 pb-4">
+                            <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                                <span>🏛️</span> Platform Identity & Scholarly Crossref DOI
                             </h2>
-                            <p class="text-xs text-gray-500">Connect Google Search Console, Bing Webmaster Tools, and Google Analytics 4 tracking.</p>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Google Site Verification Code</label>
-                                <input
-                                    v-model="form.settings.seo_google_verification"
-                                    type="text"
-                                    class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono focus:ring-2 focus:ring-indigo-600 focus:outline-none"
-                                    placeholder="e.g. AbCdEfGhIjKlMnOpQrStUvWxYz..."
-                                />
-                                <p class="text-[10px] text-gray-400 mt-1">Found in Google Search Console meta tag method.</p>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Bing Webmaster Auth Code</label>
-                                <input
-                                    v-model="form.settings.seo_bing_verification"
-                                    type="text"
-                                    class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono focus:ring-2 focus:ring-indigo-600 focus:outline-none"
-                                    placeholder="e.g. 1234567890ABCDEF..."
-                                />
-                                <p class="text-[10px] text-gray-400 mt-1">Found in Bing Webmaster Tools.</p>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Google Analytics 4 (GA4 ID)</label>
-                                <input
-                                    v-model="form.settings.seo_google_analytics_id"
-                                    type="text"
-                                    class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono focus:ring-2 focus:ring-indigo-600 focus:outline-none"
-                                    placeholder="G-XXXXXXXXXX"
-                                />
-                                <p class="text-[10px] text-gray-400 mt-1">Auto-injects gtag.js script across all pages.</p>
-                            </div>
-                        </div>
-
-                        <!-- Custom Head Scripts -->
-                        <div class="pt-2">
-                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Custom Header Tracking Scripts &amp; Schema</label>
-                            <textarea
-                                v-model="form.settings.seo_custom_head_scripts"
-                                rows="3"
-                                class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono focus:ring-2 focus:ring-indigo-600 focus:outline-none"
-                                placeholder="<!-- Paste custom tracking scripts, Meta Pixel, or JSON-LD tags here -->"
-                            ></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ═══════════════════════════════════════════════════════════ -->
-                <!-- TAB 3: PLATFORM IDENTITY, LOGOS & DOI                       -->
-                <!-- ═══════════════════════════════════════════════════════════ -->
-                <div v-show="activeTab === 'branding'" class="space-y-8">
-                    <!-- Brand Assets & Favicon Showcase -->
-                    <div class="bg-white rounded-2xl border border-gray-200/80 p-6 md:p-8 shadow-sm space-y-6">
-                        <div class="border-b border-gray-100 pb-3">
-                            <h2 class="text-sm font-bold uppercase tracking-wider text-navy-900 flex items-center gap-2">
-                                🖼️ Brand Logo & Favicon Assets
-                            </h2>
-                            <p class="text-xs text-gray-500">Live vector SVGs and touch icons registered in application head.</p>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                            <!-- Favicon Preview -->
-                            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-3">
-                                <div class="w-16 h-16 rounded-2xl mx-auto bg-gradient-to-br from-indigo-500 via-blue-600 to-rose-600 p-0.5 shadow-md flex items-center justify-center">
-                                    <div class="w-full h-full bg-[#0a101f] rounded-[14px] flex items-center justify-center font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-rose-300 text-lg">
-                                        KD
-                                    </div>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-800">Primary Favicon (SVG)</p>
-                                    <p class="text-[10px] text-slate-500 font-mono">/favicon.svg</p>
-                                </div>
-                            </div>
-
-                            <!-- Touch Icon Preview -->
-                            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-3">
-                                <div class="w-16 h-16 rounded-2xl mx-auto bg-[#070c18] border border-indigo-500/50 shadow-md flex items-center justify-center text-indigo-400 font-black text-lg">
-                                    KD
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-800">Apple Touch Icon (PNG)</p>
-                                    <p class="text-[10px] text-slate-500 font-mono">/apple-touch-icon.png</p>
-                                </div>
-                            </div>
-
-                            <!-- Full Logo Preview -->
-                            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-3">
-                                <div class="h-16 flex items-center justify-center">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 via-blue-600 to-rose-600 p-0.5">
-                                            <div class="w-full h-full bg-[#0a101f] rounded-[6px] flex items-center justify-center text-[10px] font-black text-white">
-                                                KD
-                                            </div>
-                                        </div>
-                                        <span class="text-xs font-extrabold text-slate-900">Knowledge Dynamics</span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-800">Horizontal Logo (SVG)</p>
-                                    <p class="text-[10px] text-slate-500 font-mono">/images/logo.svg</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Platform Identity & Crossref DOI -->
-                    <div class="bg-white rounded-2xl border border-gray-200/80 p-6 md:p-8 shadow-sm space-y-6">
-                        <div class="border-b border-gray-100 pb-3">
-                            <h2 class="text-sm font-bold uppercase tracking-wider text-navy-900 flex items-center gap-2">
-                                🏛️ Platform Identity & Scholarly DOI
-                            </h2>
+                            <p class="text-xs text-slate-500 mt-0.5">Configure institutional details, publisher legal entity name, and Crossref prefix for official DOI minting.</p>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Platform Name</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Platform Name</label>
                                 <input
                                     v-model="form.settings.site_name"
                                     type="text"
-                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-navy-600 focus:outline-none"
+                                    class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs focus:ring-2 focus:ring-indigo-600 focus:outline-none"
                                 />
                             </div>
+
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Publisher Legal Entity</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Publisher Legal Entity</label>
                                 <input
                                     v-model="form.settings.publisher_name"
                                     type="text"
-                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-navy-600 focus:outline-none"
+                                    class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs focus:ring-2 focus:ring-indigo-600 focus:outline-none"
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Crossref DOI Prefix *</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Crossref DOI Prefix *</label>
                                 <input
                                     v-model="form.settings.doi_prefix"
                                     type="text"
-                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-navy-600 focus:outline-none font-mono"
+                                    class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs font-mono focus:ring-2 focus:ring-indigo-600 focus:outline-none"
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Editorial Contact Email</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Editorial Contact Email</label>
                                 <input
                                     v-model="form.settings.contact_email"
                                     type="email"
-                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-navy-600 focus:outline-none"
+                                    class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs focus:ring-2 focus:ring-indigo-600 focus:outline-none"
                                 />
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Headquarters Address</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Headquarters Address</label>
                                 <input
                                     v-model="form.settings.headquarters_address"
                                     type="text"
-                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-navy-600 focus:outline-none"
+                                    class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs focus:ring-2 focus:ring-indigo-600 focus:outline-none"
                                 />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Submit Action Bar -->
-                <div class="flex justify-end pt-4">
+                <!-- Sticky Bottom Action Bar -->
+                <div class="sticky bottom-4 z-30 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 px-6 py-4 flex items-center justify-between shadow-2xl text-white">
+                    <div class="flex items-center gap-3">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-xs font-medium text-slate-300 hidden sm:inline">Settings ready to apply across all journals and public views.</span>
+                    </div>
+
                     <button
                         type="submit"
                         :disabled="form.processing"
-                        class="btn-primary text-xs py-3 px-8 shadow-md flex items-center gap-2 font-bold"
-                        :style="{ backgroundColor: form.settings.theme_primary_color || '#0F2A4A' }"
+                        class="px-8 py-3 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-rose-600 hover:from-indigo-500 hover:to-rose-500 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-indigo-500/25 flex items-center gap-2 transition duration-200 disabled:opacity-50 cursor-pointer"
                     >
-                        <span>💾</span>
-                        <span>{{ form.processing ? 'Saving Settings...' : 'Save All Settings & SEO Engine →' }}</span>
+                        <span v-if="form.processing" class="animate-spin">🌀</span>
+                        <span v-else>💾</span>
+                        <span>{{ form.processing ? 'Saving & Uploading...' : 'Save All Settings & Brand Assets' }}</span>
                     </button>
                 </div>
             </form>

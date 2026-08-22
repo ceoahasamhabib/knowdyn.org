@@ -62,6 +62,13 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user() ? $request->user()->load('roles') : null,
             ],
             'theme' => $theme,
+            'branding' => [
+                'logo' => SiteSetting::get('brand_logo'),
+                'logo_dark' => SiteSetting::get('brand_logo_dark'),
+                'favicon' => SiteSetting::get('brand_favicon', '/favicon.svg'),
+                'site_name' => SiteSetting::get('site_name', 'Knowledge Dynamics'),
+                'publisher_name' => SiteSetting::get('publisher_name', 'Knowledge Dynamics Publishing'),
+            ],
             'notifications' => $notifications,
             'flash' => [
                 'success' => $request->session()->get('success'),

@@ -7,28 +7,14 @@
 
         <title inertia>{{ config('app.name', 'Knowledge Dynamics') }}</title>
 
-        <!-- ── Favicon & App Icons ──────────────────────────── -->
-        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
-        <link rel="alternate icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
-        <link rel="manifest" href="{{ asset('site.webmanifest') }}">
-        <meta name="theme-color" content="#070c18">
-        <meta name="msapplication-TileColor" content="#070c18">
-
-        <!-- ── Canonical & Search Engine Crawling ───────────── -->
-        <link rel="canonical" href="{{ url()->current() }}">
-        <meta name="robots" content="{{ \App\Models\SiteSetting::get('seo_robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1') }}">
-        <meta name="description" content="{{ \App\Models\SiteSetting::get('seo_meta_description', 'Knowledge Dynamics is an international academic publisher for peer-reviewed open access journals, books, scholar profiles, and editorial proofreading services.') }}">
-        <meta name="keywords" content="{{ \App\Models\SiteSetting::get('seo_meta_keywords', 'academic publishing, open access journals, peer review, crossref doi, proofreading, research papers, knowledge dynamics, kdpub, medical journals, health dynamics') }}">
-        <meta name="author" content="{{ \App\Models\SiteSetting::get('publisher_name', 'Knowledge Dynamics Publishing') }}">
-
-        <!-- ── Search Engine Webmaster Verification ─────────── -->
         @php
+            $faviconUrl = \App\Models\SiteSetting::get('brand_favicon') ?: asset('favicon.svg');
+            $logoUrl = \App\Models\SiteSetting::get('brand_logo') ?: asset('favicon.svg');
             $googleVerification = \App\Models\SiteSetting::get('seo_google_verification');
             $bingVerification = \App\Models\SiteSetting::get('seo_bing_verification');
             $siteName = \App\Models\SiteSetting::get('site_name', 'Knowledge Dynamics');
             $metaDesc = \App\Models\SiteSetting::get('seo_meta_description', 'Elevating global research with open access peer-reviewed journals, Crossref DOI allocation, and academic proofreading.');
-            $ogImage = \App\Models\SiteSetting::get('seo_og_image', asset('apple-touch-icon.png'));
+            $ogImage = \App\Models\SiteSetting::get('seo_og_image') ?: asset('apple-touch-icon.png');
             $twitterHandle = \App\Models\SiteSetting::get('seo_twitter_handle', '@kdpub');
             $gaId = \App\Models\SiteSetting::get('seo_google_analytics_id');
             $customHeadScripts = \App\Models\SiteSetting::get('seo_custom_head_scripts', '');
@@ -41,7 +27,7 @@
                 'name' => $siteName,
                 'alternateName' => 'KD Scholar',
                 'url' => url('/'),
-                'logo' => asset('favicon.svg'),
+                'logo' => $logoUrl,
                 'description' => $metaDesc,
                 'email' => $contactEmail,
                 'publishingPrinciples' => url('/publish/open-access'),
@@ -52,6 +38,22 @@
             ];
         @endphp
 
+        <!-- ── Favicon & App Icons ──────────────────────────── -->
+        <link rel="icon" href="{{ $faviconUrl }}">
+        <link rel="alternate icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ $ogImage }}">
+        <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+        <meta name="theme-color" content="#070c18">
+        <meta name="msapplication-TileColor" content="#070c18">
+
+        <!-- ── Canonical & Search Engine Crawling ───────────── -->
+        <link rel="canonical" href="{{ url()->current() }}">
+        <meta name="robots" content="{{ \App\Models\SiteSetting::get('seo_robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1') }}">
+        <meta name="description" content="{{ $metaDesc }}">
+        <meta name="keywords" content="{{ \App\Models\SiteSetting::get('seo_meta_keywords', 'academic publishing, open access journals, peer review, crossref doi, proofreading, research papers, knowledge dynamics, kdpub, medical journals, health dynamics') }}">
+        <meta name="author" content="{{ $publisherName }}">
+
+        <!-- ── Search Engine Webmaster Verification ─────────── -->
         @if(!empty($googleVerification))
             <meta name="google-site-verification" content="{{ $googleVerification }}">
         @endif

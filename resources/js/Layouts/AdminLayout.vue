@@ -55,15 +55,23 @@ const isCurrent = (href) => {
             <div>
                 <!-- Brand Header -->
                 <div class="flex items-center gap-3 px-5 h-16 border-b border-slate-800/80 bg-slate-950/40">
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-rose-500 flex items-center justify-center shadow-md">
-                        <span class="text-white font-bold text-xs tracking-wider">KD</span>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-bold text-sm text-white tracking-tight truncate">Knowledge Dynamics</span>
+                    <template v-if="page.props.branding?.logo_dark || page.props.branding?.logo">
+                        <div class="flex items-center gap-2 min-w-0 flex-1">
+                            <img :src="page.props.branding.logo_dark || page.props.branding.logo" :alt="page.props.branding?.site_name || 'Knowledge Dynamics'" class="h-8 w-auto max-w-[150px] object-contain" />
+                            <span class="text-[8px] font-mono text-emerald-400 font-bold tracking-wider uppercase bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-800/50">Admin</span>
                         </div>
-                        <span class="block text-[9px] font-mono text-emerald-400 font-semibold tracking-widest uppercase">Publisher Cockpit</span>
-                    </div>
+                    </template>
+                    <template v-else>
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-rose-500 flex items-center justify-center shadow-md shrink-0">
+                            <span class="text-white font-bold text-xs tracking-wider">KD</span>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-bold text-sm text-white tracking-tight truncate">{{ page.props.branding?.site_name || 'Knowledge Dynamics' }}</span>
+                            </div>
+                            <span class="block text-[9px] font-mono text-emerald-400 font-semibold tracking-widest uppercase">Publisher Cockpit</span>
+                        </div>
+                    </template>
                 </div>
 
                 <!-- Navigation List -->
