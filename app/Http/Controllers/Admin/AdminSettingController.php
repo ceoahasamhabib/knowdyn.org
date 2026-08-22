@@ -27,10 +27,22 @@ class AdminSettingController extends Controller
         foreach ($data as $key => $value) {
             SiteSetting::updateOrCreate(
                 ['key' => $key],
-                ['value' => $value]
+                [
+                    'value' => $value,
+                    'group' => $this->inferGroup($key),
+                ]
             );
         }
 
-        return back()->with('success', 'System, Theme & Scholarly settings updated successfully.');
+        return back()->with('success', 'System, SEO, Theme & Scholarly settings updated successfully.');
+    }
+
+    protected function inferGroup(string $key): string
+    {
+        if (str_starts_with($key, 'theme_')) return 'theme';
+        if (str_starts_with($key, 'seo_')) return 'seo';
+        if (str_starts_with($key, 'doi_')) return 'doi';
+        if (str_starts_with($key, 'cpanel_')) return 'cpanel';
+        return 'general';
     }
 }

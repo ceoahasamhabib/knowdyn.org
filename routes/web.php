@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 // ── Public Routes ────────────────────────────────────────────
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/', [PublicController::class, 'home'])->name('home');
 Route::get('/about', [PublicController::class, 'about'])->name('about');
 Route::get('/contact', [PublicController::class, 'contact'])->name('contact');

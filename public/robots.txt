@@ -1,2 +1,8 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /system-updater/
+Disallow: /api/
+Disallow: /storage/temp/
+
+Sitemap: https://kdpub.com/sitemap.xml

@@ -1,0 +1,22 @@
+{
+  "name": "Knowledge Dynamics",
+  "short_name": "KD Scholar",
+  "description": "Global Open Access Academic Publishing & Research Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070c18",
+  "theme_color": "#070c18",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

@@ -3,15 +3,88 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
         <title inertia>{{ config('app.name', 'Knowledge Dynamics') }}</title>
 
-        <!-- Google Fonts: Curated Sans & Editorial Serif Pairings -->
+        <!-- ── Favicon & App Icons ──────────────────────────── -->
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+        <link rel="alternate icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+        <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+        <meta name="theme-color" content="#070c18">
+        <meta name="msapplication-TileColor" content="#070c18">
+
+        <!-- ── Canonical & Search Engine Crawling ───────────── -->
+        <link rel="canonical" href="{{ url()->current() }}">
+        <meta name="robots" content="{{ \App\Models\SiteSetting::get('seo_robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1') }}">
+        <meta name="description" content="{{ \App\Models\SiteSetting::get('seo_meta_description', 'Knowledge Dynamics is an international academic publisher for peer-reviewed open access journals, books, scholar profiles, and editorial proofreading services.') }}">
+        <meta name="keywords" content="{{ \App\Models\SiteSetting::get('seo_meta_keywords', 'academic publishing, open access journals, peer review, crossref doi, proofreading, research papers, knowledge dynamics, kdpub, medical journals, health dynamics') }}">
+        <meta name="author" content="{{ \App\Models\SiteSetting::get('publisher_name', 'Knowledge Dynamics Publishing') }}">
+
+        <!-- ── Search Engine Webmaster Verification ─────────── -->
+        @if($googleVerification = \App\Models\SiteSetting::get('seo_google_verification'))
+            <meta name="google-site-verification" content="{{ $googleVerification }}">
+        @endif
+        @if($bingVerification = \App\Models\SiteSetting::get('seo_bing_verification'))
+            <meta name="msvalidate.01" content="{{ $bingVerification }}">
+        @endif
+
+        <!-- ── Open Graph / Social Sharing ───────────────────── -->
+        <meta property="og:site_name" content="{{ \App\Models\SiteSetting::get('site_name', 'Knowledge Dynamics') }}">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta property="og:title" content="{{ \App\Models\SiteSetting::get('site_name', 'Knowledge Dynamics') }} — Global Open Access Academic Publishing">
+        <meta property="og:description" content="{{ \App\Models\SiteSetting::get('seo_meta_description', 'Elevating global research with open access peer-reviewed journals, Crossref DOI allocation, and academic proofreading.') }}">
+        <meta property="og:image" content="{{ \App\Models\SiteSetting::get('seo_og_image', asset('apple-touch-icon.png')) }}">
+
+        <!-- ── Twitter Card Metadata ────────────────────────── -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="{{ \App\Models\SiteSetting::get('seo_twitter_handle', '@kdpub') }}">
+        <meta name="twitter:creator" content="{{ \App\Models\SiteSetting::get('seo_twitter_handle', '@kdpub') }}">
+        <meta name="twitter:title" content="{{ \App\Models\SiteSetting::get('site_name', 'Knowledge Dynamics') }} — Global Open Access Academic Publishing">
+        <meta name="twitter:description" content="{{ \App\Models\SiteSetting::get('seo_meta_description', 'Elevating global research with open access peer-reviewed journals, Crossref DOI allocation, and academic proofreading.') }}">
+        <meta name="twitter:image" content="{{ \App\Models\SiteSetting::get('seo_og_image', asset('apple-touch-icon.png')) }}">
+
+        <!-- ── Schema.org Scholarly Research Organization JSON-LD ── -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "ResearchOrganization",
+            "name": "{{ \App\Models\SiteSetting::get('site_name', 'Knowledge Dynamics') }}",
+            "alternateName": "KD Scholar",
+            "url": "{{ url('/') }}",
+            "logo": "{{ asset('favicon.svg') }}",
+            "description": "{{ \App\Models\SiteSetting::get('seo_meta_description', 'Global Open Access Academic Publishing & Research Platform') }}",
+            "email": "{{ \App\Models\SiteSetting::get('contact_email', 'editor@kdpub.com') }}",
+            "publishingPrinciples": "{{ url('/publish/open-access') }}",
+            "sameAs": [
+                "https://twitter.com/kdpub",
+                "https://facebook.com/kdpub"
+            ]
+        }
+        </script>
+
+        <!-- ── Google Analytics 4 (GA4) ──────────────────────── -->
+        @if($gaId = \App\Models\SiteSetting::get('seo_google_analytics_id'))
+            <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '{{ $gaId }}');
+            </script>
+        @endif
+
+        <!-- ── Custom Head Scripts (Injected from Admin Settings) ── -->
+        {!! \App\Models\SiteSetting::get('seo_custom_head_scripts', '') !!}
+
+        <!-- ── Google Fonts ──────────────────────────────────── -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-        <!-- Global Theme Variable Definitions -->
+        <!-- ── Global Dynamic Theme CSS Variables ────────────── -->
         <style>
             :root {
                 --theme-primary: {{ \App\Models\SiteSetting::get('theme_primary_color', '#0F2A4A') }};
