@@ -27,6 +27,9 @@ foreach ($tables as $t) {
     $cols = $sqliteDb->query("PRAGMA table_info(`{$tableName}`)")->fetchAll(PDO::FETCH_ASSOC);
     $indexes = $sqliteDb->query("PRAGMA index_list(`{$tableName}`)")->fetchAll(PDO::FETCH_ASSOC);
 
+    $pkCols = array_filter($cols, fn($x) => (int)$x['pk'] > 0);
+    $isSinglePk = count($pkCols) === 1;
+
     $columnDefs = [];
     $primaryKeys = [];
 
@@ -36,14 +39,21 @@ foreach ($tables as $t) {
         $notNull = $c['notnull'] ? 'NOT NULL' : 'NULL';
         $dflt = $c['dflt_value'];
 
+        if ($c['pk']) {
+            $primaryKeys[] = "`{$colName}`";
+        }
+
         // Map types to MySQL safe types
-        if ($c['pk'] && (str_contains($type, 'INT') || $colName === 'id')) {
+        if ($colName === 'id' && $c['pk'] == 1 && $isSinglePk) {
             $colDef = "`{$colName}` bigint(20) unsigned NOT NULL AUTO_INCREMENT";
-            $primaryKeys[] = "`{$colName}`";
-        } elseif ($c['pk'] && str_contains($type, 'VARCHAR')) {
+        } elseif ($c['pk'] && str_contains($type, 'INT')) {
+            $colDef = "`{$colName}` bigint(20) unsigned NOT NULL";
+        } elseif ($c['pk'] && (str_contains($type, 'VARCHAR') || str_contains($type, 'TEXT'))) {
             $colDef = "`{$colName}` varchar(191) NOT NULL";
-            $primaryKeys[] = "`{$colName}`";
-        } elseif (str_contains($type, 'VARCHAR') || str_contains($type, 'TEXT') && str_contains($colName, 'email')) {
+        } elseif (str_starts_with($colName, 'is_') || str_starts_with($colName, 'has_') || $type === 'TINYINT(1)' || $type === 'BOOLEAN') {
+            $defaultVal = ($dflt !== null) ? $dflt : '0';
+            $colDef = "`{$colName}` tinyint(1) NOT NULL DEFAULT {$defaultVal}";
+        } elseif (str_contains($type, 'VARCHAR') || (str_contains($type, 'TEXT') && (str_contains($colName, 'email') || str_contains($colName, 'slug') || str_contains($colName, 'token')))) {
             $length = 191;
             if (str_contains($type, '(')) {
                 preg_match('/\((.*?)\)/', $type, $matches);
@@ -61,8 +71,8 @@ foreach ($tables as $t) {
             $colDef = "`{$colName}` timestamp NULL DEFAULT NULL";
         } elseif ($type === 'DATE') {
             $colDef = "`{$colName}` date NULL DEFAULT NULL";
-        } elseif (str_contains($type, 'INT')) {
-            $colDef = "`{$colName}` int(11) {$notNull}";
+        } elseif (str_contains($type, 'INT') || str_ends_with($colName, '_id') || str_ends_with($colName, '_count')) {
+            $colDef = "`{$colName}` bigint(20) unsigned {$notNull}";
             if ($dflt !== null) {
                 $colDef .= " DEFAULT {$dflt}";
             }

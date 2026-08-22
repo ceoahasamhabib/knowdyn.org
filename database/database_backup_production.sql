@@ -1,7 +1,7 @@
 -- ========================================================
 -- Knowledge Dynamics — 100% Accurate Production Database Dump
 -- Database: kdpuodtp_kdpub | Domain: https://kdpub.com
--- Generated: 2026-08-22 20:04:01
+-- Generated: 2026-08-22 20:08:50
 -- Compatible with MySQL 5.7+, 8.0+, MariaDB 10.3+
 -- ========================================================
 
@@ -18,13 +18,13 @@ SET time_zone = '+00:00';
 DROP TABLE IF EXISTS `app_notifications`;
 CREATE TABLE `app_notifications` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NULL,
+  `user_id` bigint(20) unsigned NULL,
   `type` varchar(191) NOT NULL DEFAULT 'system',
   `title` varchar(500) NOT NULL,
   `message` longtext NOT NULL,
   `link` varchar(191) NULL,
   `icon` varchar(191) NOT NULL DEFAULT '🔔',
-  `is_read` int(11) NOT NULL DEFAULT '0',
+  `is_read` tinyint(1) NOT NULL DEFAULT '0',
   `read_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -44,16 +44,16 @@ INSERT INTO `app_notifications` (`id`, `user_id`, `type`, `title`, `message`, `l
 DROP TABLE IF EXISTS `article_authors`;
 CREATE TABLE `article_authors` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `article_id` int(11) NOT NULL,
-  `user_id` int(11) NULL,
+  `article_id` bigint(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned NULL,
   `first_name` varchar(191) NOT NULL,
   `last_name` varchar(191) NOT NULL,
   `email` varchar(191) NULL,
   `affiliation` varchar(191) NULL,
   `country` varchar(191) NULL,
   `orcid` varchar(191) NULL,
-  `is_corresponding` int(11) NOT NULL DEFAULT '0',
-  `sort_order` int(11) NOT NULL DEFAULT '0',
+  `is_corresponding` tinyint(1) NOT NULL DEFAULT '0',
+  `sort_order` bigint(20) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `article_authors_article_id_index` (`article_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -87,12 +87,12 @@ INSERT INTO `article_authors` (`id`, `article_id`, `user_id`, `first_name`, `las
 DROP TABLE IF EXISTS `article_files`;
 CREATE TABLE `article_files` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `article_id` int(11) NOT NULL,
+  `article_id` bigint(20) unsigned NOT NULL,
   `file_path` varchar(500) NOT NULL,
   `file_name` varchar(191) NOT NULL,
   `file_type` varchar(191) NOT NULL,
-  `file_size` int(11) NULL,
-  `is_primary` int(11) NOT NULL DEFAULT '0',
+  `file_size` bigint(20) unsigned NULL,
+  `is_primary` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -105,9 +105,9 @@ CREATE TABLE `article_files` (
 DROP TABLE IF EXISTS `article_issue`;
 CREATE TABLE `article_issue` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `article_id` int(11) NOT NULL,
-  `issue_id` int(11) NOT NULL,
-  `sort_order` int(11) NOT NULL DEFAULT '0',
+  `article_id` bigint(20) unsigned NOT NULL,
+  `issue_id` bigint(20) unsigned NOT NULL,
+  `sort_order` bigint(20) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `article_issue_article_id_issue_id_unique` (`article_id`, `issue_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -141,8 +141,8 @@ INSERT INTO `article_issue` (`id`, `article_id`, `issue_id`, `sort_order`) VALUE
 DROP TABLE IF EXISTS `article_keywords`;
 CREATE TABLE `article_keywords` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `article_id` int(11) NOT NULL,
-  `keyword_id` int(11) NOT NULL,
+  `article_id` bigint(20) unsigned NOT NULL,
+  `keyword_id` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `article_keywords_article_id_keyword_id_unique` (`article_id`, `keyword_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -154,10 +154,10 @@ CREATE TABLE `article_keywords` (
 DROP TABLE IF EXISTS `article_references`;
 CREATE TABLE `article_references` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `article_id` int(11) NOT NULL,
+  `article_id` bigint(20) unsigned NOT NULL,
   `reference_text` longtext NOT NULL,
   `doi` varchar(191) NULL,
-  `sort_order` int(11) NOT NULL DEFAULT '0',
+  `sort_order` bigint(20) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -190,7 +190,7 @@ INSERT INTO `article_references` (`id`, `article_id`, `reference_text`, `doi`, `
 DROP TABLE IF EXISTS `articles`;
 CREATE TABLE `articles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `journal_id` int(11) NOT NULL,
+  `journal_id` bigint(20) unsigned NOT NULL,
   `title` varchar(500) NOT NULL,
   `slug` varchar(191) NOT NULL,
   `abstract` longtext NULL,
@@ -206,8 +206,8 @@ CREATE TABLE `articles` (
   `license` varchar(191) NULL,
   `citation_info` longtext NULL,
   `status` varchar(191) NOT NULL DEFAULT 'draft',
-  `view_count` int(11) NOT NULL DEFAULT '0',
-  `download_count` int(11) NOT NULL DEFAULT '0',
+  `view_count` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `download_count` bigint(20) unsigned NOT NULL DEFAULT '0',
   `meta_title` varchar(500) NULL,
   `meta_description` longtext NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -249,10 +249,10 @@ INSERT INTO `articles` (`id`, `journal_id`, `title`, `slug`, `abstract`, `articl
 DROP TABLE IF EXISTS `audit_logs`;
 CREATE TABLE `audit_logs` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NULL,
+  `user_id` bigint(20) unsigned NULL,
   `action` varchar(191) NOT NULL,
   `auditable_type` varchar(191) NULL,
-  `auditable_id` int(11) NULL,
+  `auditable_id` bigint(20) unsigned NULL,
   `old_values` longtext NULL,
   `new_values` longtext NULL,
   `ip_address` varchar(191) NULL,
@@ -298,16 +298,16 @@ CREATE TABLE `books` (
   `slug` varchar(191) NOT NULL,
   `author` varchar(191) NOT NULL,
   `isbn` varchar(191) NULL,
-  `year` int(11) NOT NULL DEFAULT '2024',
-  `pages` int(11) NOT NULL DEFAULT '300',
+  `year` bigint(20) unsigned NOT NULL DEFAULT '2024',
+  `pages` bigint(20) unsigned NOT NULL DEFAULT '300',
   `category` varchar(191) NOT NULL DEFAULT 'Medicine & Health',
   `format` varchar(191) NOT NULL DEFAULT 'Print & eBook',
   `description` longtext NULL,
   `doi` varchar(191) NULL,
-  `is_open_access` int(11) NOT NULL DEFAULT '0',
+  `is_open_access` tinyint(1) NOT NULL DEFAULT '0',
   `cover_image` varchar(191) NULL,
   `file_path` varchar(500) NULL,
-  `sort_order` int(11) NOT NULL DEFAULT '0',
+  `sort_order` bigint(20) unsigned NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -329,7 +329,7 @@ DROP TABLE IF EXISTS `cache`;
 CREATE TABLE `cache` (
   `key` varchar(191) NOT NULL,
   `value` longtext NOT NULL,
-  `expiration` int(11) NOT NULL,
+  `expiration` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`key`),
   KEY `cache_expiration_index` (`expiration`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -342,7 +342,7 @@ DROP TABLE IF EXISTS `cache_locks`;
 CREATE TABLE `cache_locks` (
   `key` varchar(191) NOT NULL,
   `owner` varchar(191) NOT NULL,
-  `expiration` int(11) NOT NULL,
+  `expiration` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`key`),
   KEY `cache_locks_expiration_index` (`expiration`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -360,7 +360,7 @@ CREATE TABLE `careers` (
   `type` varchar(191) NOT NULL DEFAULT 'Academic Editorial Role',
   `summary` longtext NULL,
   `requirements` longtext NULL,
-  `is_active` int(11) NOT NULL DEFAULT '1',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `deadline` varchar(191) NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -388,7 +388,7 @@ CREATE TABLE `doi_records` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `doi` varchar(191) NOT NULL,
   `doiable_type` varchar(191) NOT NULL,
-  `doiable_id` int(11) NOT NULL,
+  `doiable_id` bigint(20) unsigned NOT NULL,
   `provider` varchar(191) NULL,
   `status` varchar(191) NOT NULL DEFAULT 'pending',
   `registered_at` timestamp NULL DEFAULT NULL,
@@ -406,11 +406,11 @@ CREATE TABLE `doi_records` (
 DROP TABLE IF EXISTS `email_account_requests`;
 CREATE TABLE `email_account_requests` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
+  `user_id` bigint(20) unsigned NOT NULL,
   `requested_username` varchar(191) NOT NULL,
   `domain` varchar(191) NOT NULL DEFAULT 'knowdyn.org',
   `full_email` varchar(191) NOT NULL,
-  `quota_mb` int(11) NOT NULL DEFAULT '500',
+  `quota_mb` bigint(20) unsigned NOT NULL DEFAULT '500',
   `status` varchar(191) NOT NULL DEFAULT 'pending',
   `password_encrypted` longtext NULL,
   `rejection_reason` longtext NULL,
@@ -500,15 +500,15 @@ INSERT INTO `guidelines_pages` (`id`, `key`, `title`, `content`, `meta_title`, `
 DROP TABLE IF EXISTS `issues`;
 CREATE TABLE `issues` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `volume_id` int(11) NOT NULL,
+  `volume_id` bigint(20) unsigned NOT NULL,
   `number` varchar(191) NOT NULL,
   `title` varchar(500) NULL,
   `description` longtext NULL,
   `cover_image` varchar(191) NULL,
   `published_at` date NULL DEFAULT NULL,
-  `is_current` int(11) NOT NULL DEFAULT '0',
+  `is_current` tinyint(1) NOT NULL DEFAULT '0',
   `status` varchar(191) NOT NULL DEFAULT 'draft',
-  `sort_order` int(11) NOT NULL DEFAULT '0',
+  `sort_order` bigint(20) unsigned NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -547,14 +547,14 @@ DROP TABLE IF EXISTS `job_batches`;
 CREATE TABLE `job_batches` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(191) NOT NULL,
-  `total_jobs` int(11) NOT NULL,
-  `pending_jobs` int(11) NOT NULL,
-  `failed_jobs` int(11) NOT NULL,
+  `total_jobs` bigint(20) unsigned NOT NULL,
+  `pending_jobs` bigint(20) unsigned NOT NULL,
+  `failed_jobs` bigint(20) unsigned NOT NULL,
   `failed_job_ids` longtext NOT NULL,
   `options` longtext NULL,
-  `cancelled_at` int(11) NULL,
-  `created_at` int(11) NOT NULL,
-  `finished_at` int(11) NULL,
+  `cancelled_at` bigint(20) unsigned NULL,
+  `created_at` bigint(20) unsigned NOT NULL,
+  `finished_at` bigint(20) unsigned NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -567,10 +567,10 @@ CREATE TABLE `jobs` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `queue` varchar(191) NOT NULL,
   `payload` longtext NOT NULL,
-  `attempts` int(11) NOT NULL,
-  `reserved_at` int(11) NULL,
-  `available_at` int(11) NOT NULL,
-  `created_at` int(11) NOT NULL,
+  `attempts` bigint(20) unsigned NOT NULL,
+  `reserved_at` bigint(20) unsigned NULL,
+  `available_at` bigint(20) unsigned NOT NULL,
+  `created_at` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `jobs_queue_index` (`queue`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -582,8 +582,8 @@ CREATE TABLE `jobs` (
 DROP TABLE IF EXISTS `journal_editorial_members`;
 CREATE TABLE `journal_editorial_members` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `journal_id` int(11) NOT NULL,
-  `user_id` int(11) NULL,
+  `journal_id` bigint(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned NULL,
   `name` varchar(191) NOT NULL,
   `email` varchar(191) NULL,
   `institution` varchar(191) NULL,
@@ -591,8 +591,8 @@ CREATE TABLE `journal_editorial_members` (
   `role` varchar(191) NOT NULL,
   `biography` longtext NULL,
   `orcid` varchar(191) NULL,
-  `sort_order` int(11) NOT NULL DEFAULT '0',
-  `is_active` int(11) NOT NULL DEFAULT '1',
+  `sort_order` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -625,7 +625,7 @@ INSERT INTO `journal_editorial_members` (`id`, `journal_id`, `user_id`, `name`, 
 DROP TABLE IF EXISTS `journal_settings`;
 CREATE TABLE `journal_settings` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `journal_id` int(11) NOT NULL,
+  `journal_id` bigint(20) unsigned NOT NULL,
   `peer_review_process` longtext NULL,
   `publication_ethics` longtext NULL,
   `author_guidelines` longtext NULL,
@@ -673,11 +673,11 @@ CREATE TABLE `journals` (
   `contact_phone` varchar(191) NULL,
   `website` varchar(191) NULL,
   `status` varchar(191) NOT NULL DEFAULT 'active',
-  `is_open_access` int(11) NOT NULL DEFAULT '1',
-  `established_year` int(11) NULL,
+  `is_open_access` tinyint(1) NOT NULL DEFAULT '1',
+  `established_year` bigint(20) unsigned NULL,
   `meta_title` varchar(500) NULL,
   `meta_description` longtext NULL,
-  `sort_order` int(11) NOT NULL DEFAULT '0',
+  `sort_order` bigint(20) unsigned NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -719,9 +719,9 @@ CREATE TABLE `legacy_url_mappings` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `old_url` varchar(500) NOT NULL,
   `new_url` varchar(500) NOT NULL,
-  `status_code` int(11) NOT NULL DEFAULT '301',
+  `status_code` bigint(20) unsigned NOT NULL DEFAULT '301',
   `entity_type` varchar(191) NULL,
-  `entity_id` int(11) NULL,
+  `entity_id` bigint(20) unsigned NULL,
   `verified_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -735,14 +735,14 @@ CREATE TABLE `legacy_url_mappings` (
 DROP TABLE IF EXISTS `manuscript_authors`;
 CREATE TABLE `manuscript_authors` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `manuscript_id` int(11) NOT NULL,
+  `manuscript_id` bigint(20) unsigned NOT NULL,
   `first_name` varchar(191) NOT NULL,
   `last_name` varchar(191) NOT NULL,
   `email` varchar(191) NULL,
   `affiliation` varchar(191) NULL,
   `orcid` varchar(191) NULL,
-  `is_corresponding` int(11) NOT NULL DEFAULT '0',
-  `sort_order` int(11) NOT NULL DEFAULT '0',
+  `is_corresponding` tinyint(1) NOT NULL DEFAULT '0',
+  `sort_order` bigint(20) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -753,12 +753,12 @@ CREATE TABLE `manuscript_authors` (
 DROP TABLE IF EXISTS `manuscript_files`;
 CREATE TABLE `manuscript_files` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `manuscript_id` int(11) NOT NULL,
+  `manuscript_id` bigint(20) unsigned NOT NULL,
   `file_path` varchar(500) NOT NULL,
   `file_name` varchar(191) NOT NULL,
   `file_type` varchar(191) NOT NULL,
-  `file_size` int(11) NULL,
-  `version` int(11) NOT NULL DEFAULT '1',
+  `file_size` bigint(20) unsigned NULL,
+  `version` bigint(20) unsigned NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -771,8 +771,8 @@ CREATE TABLE `manuscript_files` (
 DROP TABLE IF EXISTS `manuscript_status_history`;
 CREATE TABLE `manuscript_status_history` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `manuscript_id` int(11) NOT NULL,
-  `user_id` int(11) NULL,
+  `manuscript_id` bigint(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned NULL,
   `from_status` varchar(191) NULL,
   `to_status` varchar(191) NOT NULL,
   `comment` longtext NULL,
@@ -787,14 +787,14 @@ CREATE TABLE `manuscript_status_history` (
 DROP TABLE IF EXISTS `manuscripts`;
 CREATE TABLE `manuscripts` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `journal_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `journal_id` bigint(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned NOT NULL,
   `title` varchar(500) NOT NULL,
   `abstract` longtext NULL,
   `article_type` varchar(191) NOT NULL DEFAULT 'original-research',
   `status` varchar(191) NOT NULL DEFAULT 'draft',
-  `editor_id` int(11) NULL,
-  `article_id` int(11) NULL,
+  `editor_id` bigint(20) unsigned NULL,
+  `article_id` bigint(20) unsigned NULL,
   `funding` longtext NULL,
   `conflict_of_interest` longtext NULL,
   `ethics_statement` longtext NULL,
@@ -818,7 +818,7 @@ DROP TABLE IF EXISTS `migrations`;
 CREATE TABLE `migrations` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `migration` varchar(191) NOT NULL,
-  `batch` int(11) NOT NULL,
+  `batch` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -847,9 +847,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES ('17', '2026_08_22_
 
 DROP TABLE IF EXISTS `model_has_permissions`;
 CREATE TABLE `model_has_permissions` (
-  `permission_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `permission_id` bigint(20) unsigned NOT NULL,
   `model_type` varchar(191) NOT NULL,
-  `model_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `model_id` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`permission_id`, `model_type`, `model_id`),
   KEY `model_has_permissions_model_id_model_type_index` (`model_id`, `model_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -860,9 +860,9 @@ CREATE TABLE `model_has_permissions` (
 
 DROP TABLE IF EXISTS `model_has_roles`;
 CREATE TABLE `model_has_roles` (
-  `role_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `role_id` bigint(20) unsigned NOT NULL,
   `model_type` varchar(191) NOT NULL,
-  `model_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `model_id` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`role_id`, `model_type`, `model_id`),
   KEY `model_has_roles_model_id_model_type_index` (`model_id`, `model_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -890,9 +890,9 @@ CREATE TABLE `news_events` (
   `location` varchar(191) NULL,
   `registration_url` varchar(500) NULL,
   `deadline` varchar(191) NULL,
-  `is_featured` int(11) NOT NULL DEFAULT '0',
-  `is_published` int(11) NOT NULL DEFAULT '1',
-  `sort_order` int(11) NOT NULL DEFAULT '0',
+  `is_featured` tinyint(1) NOT NULL DEFAULT '0',
+  `is_published` tinyint(1) NOT NULL DEFAULT '1',
+  `sort_order` bigint(20) unsigned NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -915,7 +915,7 @@ CREATE TABLE `pages` (
   `title` varchar(500) NOT NULL,
   `slug` varchar(191) NOT NULL,
   `content` longtext NULL,
-  `is_published` int(11) NOT NULL DEFAULT '0',
+  `is_published` tinyint(1) NOT NULL DEFAULT '0',
   `meta_title` varchar(500) NULL,
   `meta_description` longtext NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -987,8 +987,8 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at
 DROP TABLE IF EXISTS `project_members`;
 CREATE TABLE `project_members` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned NOT NULL,
   `role` varchar(191) NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `project_members_project_id_user_id_unique` (`project_id`, `user_id`)
@@ -1001,7 +1001,7 @@ CREATE TABLE `project_members` (
 DROP TABLE IF EXISTS `projects`;
 CREATE TABLE `projects` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
+  `user_id` bigint(20) unsigned NOT NULL,
   `title` varchar(500) NOT NULL,
   `slug` varchar(191) NOT NULL,
   `summary` longtext NULL,
@@ -1011,7 +1011,7 @@ CREATE TABLE `projects` (
   `end_date` date NULL DEFAULT NULL,
   `institution` varchar(191) NULL,
   `external_url` varchar(500) NULL,
-  `is_public` int(11) NOT NULL DEFAULT '1',
+  `is_public` tinyint(1) NOT NULL DEFAULT '1',
   `meta_title` varchar(500) NULL,
   `meta_description` longtext NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -1029,14 +1029,14 @@ CREATE TABLE `projects` (
 DROP TABLE IF EXISTS `researcher_affiliations`;
 CREATE TABLE `researcher_affiliations` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `researcher_profile_id` int(11) NOT NULL,
+  `researcher_profile_id` bigint(20) unsigned NOT NULL,
   `institution` varchar(191) NOT NULL,
   `department` varchar(191) NULL,
   `position` varchar(191) NULL,
   `country` varchar(191) NULL,
   `start_date` date NULL DEFAULT NULL,
   `end_date` date NULL DEFAULT NULL,
-  `is_current` int(11) NOT NULL DEFAULT '0',
+  `is_current` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1047,7 +1047,7 @@ CREATE TABLE `researcher_affiliations` (
 DROP TABLE IF EXISTS `researcher_interests`;
 CREATE TABLE `researcher_interests` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `researcher_profile_id` int(11) NOT NULL,
+  `researcher_profile_id` bigint(20) unsigned NOT NULL,
   `interest` varchar(191) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `researcher_interests_interest_index` (`interest`)
@@ -1060,7 +1060,7 @@ CREATE TABLE `researcher_interests` (
 DROP TABLE IF EXISTS `researcher_profiles`;
 CREATE TABLE `researcher_profiles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
+  `user_id` bigint(20) unsigned NOT NULL,
   `biography` longtext NULL,
   `institution` varchar(191) NULL,
   `department` varchar(191) NULL,
@@ -1072,7 +1072,7 @@ CREATE TABLE `researcher_profiles` (
   `website` varchar(191) NULL,
   `research_gate` varchar(191) NULL,
   `expertise` longtext NULL,
-  `is_public` int(11) NOT NULL DEFAULT '1',
+  `is_public` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1086,9 +1086,9 @@ CREATE TABLE `researcher_profiles` (
 DROP TABLE IF EXISTS `review_assignments`;
 CREATE TABLE `review_assignments` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `manuscript_id` int(11) NOT NULL,
-  `reviewer_id` int(11) NOT NULL,
-  `assigned_by` int(11) NOT NULL,
+  `manuscript_id` bigint(20) unsigned NOT NULL,
+  `reviewer_id` bigint(20) unsigned NOT NULL,
+  `assigned_by` bigint(20) unsigned NOT NULL,
   `status` varchar(191) NOT NULL DEFAULT 'pending',
   `due_date` date NULL DEFAULT NULL,
   `assigned_at` timestamp NULL DEFAULT NULL,
@@ -1106,11 +1106,11 @@ CREATE TABLE `review_assignments` (
 DROP TABLE IF EXISTS `reviews`;
 CREATE TABLE `reviews` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `review_assignment_id` int(11) NOT NULL,
+  `review_assignment_id` bigint(20) unsigned NOT NULL,
   `recommendation` varchar(191) NOT NULL,
   `comments_to_editor` longtext NULL,
   `comments_to_author` longtext NULL,
-  `quality_score` int(11) NULL,
+  `quality_score` bigint(20) unsigned NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1123,8 +1123,8 @@ CREATE TABLE `reviews` (
 
 DROP TABLE IF EXISTS `role_has_permissions`;
 CREATE TABLE `role_has_permissions` (
-  `permission_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `role_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `permission_id` bigint(20) unsigned NOT NULL,
+  `role_id` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`permission_id`, `role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1240,14 +1240,14 @@ INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VAL
 DROP TABLE IF EXISTS `service_requests`;
 CREATE TABLE `service_requests` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `service_id` int(11) NOT NULL,
-  `user_id` int(11) NULL,
+  `service_id` bigint(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned NULL,
   `name` varchar(191) NOT NULL,
   `email` varchar(191) NOT NULL,
   `phone` varchar(191) NULL,
   `message` longtext NULL,
   `status` varchar(191) NOT NULL DEFAULT 'submitted',
-  `assigned_to` int(11) NULL,
+  `assigned_to` bigint(20) unsigned NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1270,8 +1270,8 @@ CREATE TABLE `services` (
   `cta_text` varchar(191) NULL,
   `cta_url` varchar(500) NULL,
   `icon` varchar(191) NULL,
-  `is_active` int(11) NOT NULL DEFAULT '1',
-  `sort_order` int(11) NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `sort_order` bigint(20) unsigned NOT NULL DEFAULT '0',
   `meta_title` varchar(500) NULL,
   `meta_description` longtext NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -1321,11 +1321,11 @@ INSERT INTO `services` (`id`, `title`, `slug`, `description`, `features`, `proce
 DROP TABLE IF EXISTS `sessions`;
 CREATE TABLE `sessions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NULL,
+  `user_id` bigint(20) unsigned NULL,
   `ip_address` varchar(191) NULL,
   `user_agent` longtext NULL,
   `payload` longtext NOT NULL,
-  `last_activity` int(11) NOT NULL,
+  `last_activity` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `sessions_last_activity_index` (`last_activity`),
   KEY `sessions_user_id_index` (`user_id`)
@@ -1420,9 +1420,9 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `re
 DROP TABLE IF EXISTS `volumes`;
 CREATE TABLE `volumes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `journal_id` int(11) NOT NULL,
-  `number` int(11) NOT NULL,
-  `year` int(11) NOT NULL,
+  `journal_id` bigint(20) unsigned NOT NULL,
+  `number` bigint(20) unsigned NOT NULL,
+  `year` bigint(20) unsigned NOT NULL,
   `title` varchar(500) NULL,
   `description` longtext NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -1451,8 +1451,8 @@ INSERT INTO `volumes` (`id`, `journal_id`, `number`, `year`, `title`, `descripti
 DROP TABLE IF EXISTS `webmail_messages`;
 CREATE TABLE `webmail_messages` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `email_account_request_id` int(11) NULL,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `email_account_request_id` bigint(20) unsigned NULL,
   `folder` varchar(191) NOT NULL DEFAULT 'inbox',
   `from_name` varchar(191) NULL,
   `from_email` varchar(191) NOT NULL,
@@ -1461,9 +1461,9 @@ CREATE TABLE `webmail_messages` (
   `subject` varchar(191) NOT NULL,
   `body_html` longtext NULL,
   `body_text` longtext NULL,
-  `is_read` int(11) NOT NULL DEFAULT '0',
-  `is_starred` int(11) NOT NULL DEFAULT '0',
-  `has_attachments` int(11) NOT NULL DEFAULT '0',
+  `is_read` tinyint(1) NOT NULL DEFAULT '0',
+  `is_starred` tinyint(1) NOT NULL DEFAULT '0',
+  `has_attachments` tinyint(1) NOT NULL DEFAULT '0',
   `sent_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
