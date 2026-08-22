@@ -177,6 +177,13 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/guidelines/{guidelinePage}/edit', [\App\Http\Controllers\Admin\AdminGuidelineController::class, 'edit'])->name('guidelines.edit');
     Route::put('/guidelines/{guidelinePage}', [\App\Http\Controllers\Admin\AdminGuidelineController::class, 'update'])->name('guidelines.update');
 
+    // Media Library & File Manager
+    Route::get('/media', [\App\Http\Controllers\Admin\AdminMediaController::class, 'index'])->name('media.index');
+    Route::post('/media', [\App\Http\Controllers\Admin\AdminMediaController::class, 'store'])->name('media.store');
+    Route::put('/media/{media}', [\App\Http\Controllers\Admin\AdminMediaController::class, 'update'])->name('media.update');
+    Route::delete('/media/{media}', [\App\Http\Controllers\Admin\AdminMediaController::class, 'destroy'])->name('media.destroy');
+    Route::post('/media/bulk-delete', [\App\Http\Controllers\Admin\AdminMediaController::class, 'bulkDestroy'])->name('media.bulk_destroy');
+
     // System Settings & DOI Config
     Route::get('/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'update'])->name('settings.update');

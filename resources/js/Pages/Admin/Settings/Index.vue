@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import MediaPickerModal from '@/Components/KD/MediaPickerModal.vue';
 
 const props = defineProps({
     settings: {
@@ -63,6 +64,34 @@ const logoInput = ref(null);
 const logoDarkInput = ref(null);
 const faviconInput = ref(null);
 const ogImageInput = ref(null);
+
+// Media Picker Modal State
+const showMediaPicker = ref(false);
+const activeMediaTarget = ref(null); // 'logo' | 'logo_dark' | 'favicon' | 'og_image'
+
+const openMediaPicker = (target) => {
+    activeMediaTarget.value = target;
+    showMediaPicker.value = true;
+};
+
+const onMediaSelected = (media) => {
+    if (activeMediaTarget.value === 'logo') {
+        form.settings.brand_logo = media.url;
+        logoPreview.value = media.url;
+        form.remove_brand_logo = false;
+    } else if (activeMediaTarget.value === 'logo_dark') {
+        form.settings.brand_logo_dark = media.url;
+        logoDarkPreview.value = media.url;
+        form.remove_brand_logo_dark = false;
+    } else if (activeMediaTarget.value === 'favicon') {
+        form.settings.brand_favicon = media.url;
+        faviconPreview.value = media.url;
+        form.remove_brand_favicon = false;
+    } else if (activeMediaTarget.value === 'og_image') {
+        form.settings.seo_og_image = media.url;
+        ogImagePreview.value = media.url;
+    }
+};
 
 const handleLogoChange = (e) => {
     const file = e.target.files[0];
@@ -270,11 +299,18 @@ const submit = () => {
                                 <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
                                     <span>🖼️</span> Platform Logos & Favicon Asset Management
                                 </h2>
-                                <p class="text-xs text-slate-500 mt-0.5">Upload custom logos and icons for light navigation bars, dark footers, mobile home screens, and browser tabs.</p>
+                                <p class="text-xs text-slate-500 mt-0.5">Pick from the central Media Library or upload directly for headers, dark footers, and tabs.</p>
                             </div>
-                            <span class="text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full shrink-0">
-                                ✓ Live Asset Sync Active
-                            </span>
+                            <div class="flex items-center gap-2">
+                                <a
+                                    :href="route('admin.media.index')"
+                                    target="_blank"
+                                    class="text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 border border-indigo-200 px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-xs"
+                                >
+                                    <span>📁 Open Media Library</span>
+                                    <span class="font-mono">↗</span>
+                                </a>
+                            </div>
                         </div>
 
                         <!-- 3-Column Upload Grids -->
@@ -286,7 +322,7 @@ const submit = () => {
                                         <label class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
                                             <span>☀️</span> Primary Logo
                                         </label>
-                                        <span class="text-[10px] text-slate-400 font-mono">SVG, PNG, WebP</span>
+                                        <span class="text-[10px] text-slate-400 font-mono">Light BG</span>
                                     </div>
                                     <p class="text-[11px] text-slate-500 mb-4">Used on light public navigation bars and headers.</p>
 
@@ -318,7 +354,14 @@ const submit = () => {
                                     </div>
                                 </div>
 
-                                <div>
+                                <div class="space-y-2">
+                                    <button
+                                        type="button"
+                                        @click="openMediaPicker('logo')"
+                                        class="w-full py-2 px-3 rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center gap-1.5 transition shadow-xs"
+                                    >
+                                        <span>📁</span> Choose from Media Library
+                                    </button>
                                     <input
                                         ref="logoInput"
                                         type="file"
@@ -329,9 +372,9 @@ const submit = () => {
                                     />
                                     <label
                                         for="brand_logo_file"
-                                        class="w-full py-2.5 px-4 rounded-xl border border-indigo-200 bg-indigo-50/80 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition shadow-xs"
+                                        class="w-full py-1.5 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-[11px] font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition shadow-xs"
                                     >
-                                        <span>📁</span> Upload Primary Logo
+                                        <span>⬆️</span> Direct Upload New
                                     </label>
                                 </div>
                             </div>
@@ -343,7 +386,7 @@ const submit = () => {
                                         <label class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
                                             <span>🌙</span> Dark Mode / Footer Logo
                                         </label>
-                                        <span class="text-[10px] text-slate-400 font-mono">SVG, PNG, WebP</span>
+                                        <span class="text-[10px] text-slate-400 font-mono">Dark BG</span>
                                     </div>
                                     <p class="text-[11px] text-slate-500 mb-4">Used on dark footer and publisher cockpit sidebar.</p>
 
@@ -378,7 +421,14 @@ const submit = () => {
                                     </div>
                                 </div>
 
-                                <div>
+                                <div class="space-y-2">
+                                    <button
+                                        type="button"
+                                        @click="openMediaPicker('logo_dark')"
+                                        class="w-full py-2 px-3 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition shadow-xs"
+                                    >
+                                        <span>📁</span> Choose from Media Library
+                                    </button>
                                     <input
                                         ref="logoDarkInput"
                                         type="file"
@@ -389,9 +439,9 @@ const submit = () => {
                                     />
                                     <label
                                         for="brand_logo_dark_file"
-                                        class="w-full py-2.5 px-4 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition shadow-xs"
+                                        class="w-full py-1.5 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-[11px] font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition shadow-xs"
                                     >
-                                        <span>📁</span> Upload Dark Logo
+                                        <span>⬆️</span> Direct Upload New
                                     </label>
                                 </div>
                             </div>
@@ -403,7 +453,7 @@ const submit = () => {
                                         <label class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
                                             <span>⭐</span> Favicon & Tab Icon
                                         </label>
-                                        <span class="text-[10px] text-slate-400 font-mono">SVG, ICO, PNG</span>
+                                        <span class="text-[10px] text-slate-400 font-mono">Tab Icon</span>
                                     </div>
                                     <p class="text-[11px] text-slate-500 mb-4">Displayed in browser tabs, bookmarks, and PWA.</p>
 
@@ -417,12 +467,12 @@ const submit = () => {
                                         </div>
 
                                         <div class="flex items-center justify-between text-[10px] text-slate-500 font-mono px-1">
-                                            <span>Direct: /favicon.svg</span>
+                                            <span class="truncate max-w-[140px]">{{ form.settings.brand_favicon || '/favicon.svg' }}</span>
                                             <button
                                                 v-if="faviconPreview !== '/favicon.svg'"
                                                 type="button"
                                                 @click="removeFavicon"
-                                                class="text-rose-600 font-bold hover:underline"
+                                                class="text-rose-600 font-bold hover:underline shrink-0"
                                             >
                                                 Reset Default
                                             </button>
@@ -430,7 +480,14 @@ const submit = () => {
                                     </div>
                                 </div>
 
-                                <div>
+                                <div class="space-y-2">
+                                    <button
+                                        type="button"
+                                        @click="openMediaPicker('favicon')"
+                                        class="w-full py-2 px-3 rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center gap-1.5 transition shadow-xs"
+                                    >
+                                        <span>📁</span> Choose from Media Library
+                                    </button>
                                     <input
                                         ref="faviconInput"
                                         type="file"
@@ -441,9 +498,9 @@ const submit = () => {
                                     />
                                     <label
                                         for="brand_favicon_file"
-                                        class="w-full py-2.5 px-4 rounded-xl border border-indigo-200 bg-indigo-50/80 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition shadow-xs"
+                                        class="w-full py-1.5 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-[11px] font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition shadow-xs"
                                     >
-                                        <span>📁</span> Upload Favicon (.svg/.ico)
+                                        <span>⬆️</span> Direct Upload New
                                     </label>
                                 </div>
                             </div>
@@ -482,22 +539,13 @@ const submit = () => {
                                 <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
                                     <span>🌐</span> Facebook / LinkedIn / X Social Preview
                                 </h3>
-                                <div>
-                                    <input
-                                        ref="ogImageInput"
-                                        type="file"
-                                        accept="image/*"
-                                        @change="handleOgImageChange"
-                                        class="hidden"
-                                        id="seo_og_image_file"
-                                    />
-                                    <label
-                                        for="seo_og_image_file"
-                                        class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer flex items-center gap-1"
-                                    >
-                                        <span>📷 Change Cover Image</span>
-                                    </label>
-                                </div>
+                                <button
+                                    type="button"
+                                    @click="openMediaPicker('og_image')"
+                                    class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                                >
+                                    <span>📷 Choose from Media</span>
+                                </button>
                             </div>
 
                             <div class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 font-sans shadow-xs">
@@ -882,5 +930,13 @@ const submit = () => {
                 </div>
             </form>
         </div>
+
+        <!-- ── Reusable Media Picker Modal for Brand Logos & Favicon ── -->
+        <MediaPickerModal
+            v-model="showMediaPicker"
+            :default-folder="activeMediaTarget === 'favicon' ? 'branding' : 'branding'"
+            :title="'Select ' + (activeMediaTarget === 'logo' ? 'Primary Logo' : (activeMediaTarget === 'logo_dark' ? 'Dark Logo' : (activeMediaTarget === 'favicon' ? 'Favicon' : 'Social Cover Image'))) + ' from Media Library'"
+            @select="onMediaSelected"
+        />
     </AdminLayout>
 </template>
