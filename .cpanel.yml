@@ -1,0 +1,12 @@
+---
+deployment:
+  tasks:
+    # 1. Export repository root path
+    - export DEPLOYPATH=/home/kdpuodtp/public_html/
+    # 2. Sync files to destination
+    - /bin/rsync -av --exclude='.git*' --exclude='node_modules' --exclude='tests' ./ $DEPLOYPATH
+    # 3. Create storage symlink and optimize cache if PHP CLI is available
+    - /usr/local/bin/php $DEPLOYPATH/artisan storage:link || true
+    - /usr/local/bin/php $DEPLOYPATH/artisan config:cache || true
+    - /usr/local/bin/php $DEPLOYPATH/artisan route:cache || true
+    - /usr/local/bin/php $DEPLOYPATH/artisan view:cache || true
