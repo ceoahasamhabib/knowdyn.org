@@ -1,7 +1,7 @@
 -- ========================================================
 -- Knowledge Dynamics — 100% Accurate Production Database Dump
 -- Database: kdpuodtp_kdpub | Domain: https://kdpub.com
--- Generated: 2026-08-22 20:08:50
+-- Generated: 2026-08-22 21:22:42
 -- Compatible with MySQL 5.7+, 8.0+, MariaDB 10.3+
 -- ========================================================
 
@@ -1472,3 +1472,72 @@ CREATE TABLE `webmail_messages` (
 
 COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
+
+-- --------------------------------------------------------
+-- Table structure for table email_account_requests
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS email_account_requests (
+  id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  user_id bigint(20) unsigned NOT NULL,
+  equested_username varchar(255) NOT NULL,
+  domain varchar(255) NOT NULL DEFAULT 'kdpub.com',
+  ull_email varchar(255) NOT NULL,
+  quota_mb int(11) NOT NULL DEFAULT 500,
+  status enum('pending','approved','rejected','active','suspended') NOT NULL DEFAULT 'pending',
+  password_encrypted text DEFAULT NULL,
+  ejection_reason text DEFAULT NULL,
+  dmin_notes text DEFAULT NULL,
+  cpanel_account_created_at timestamp NULL DEFAULT NULL,
+  created_at timestamp NULL DEFAULT NULL,
+  updated_at timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY email_account_requests_full_email_unique (ull_email),
+  KEY email_account_requests_user_id_foreign (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- Table structure for table webmail_messages
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS webmail_messages (
+  id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  user_id bigint(20) unsigned NOT NULL,
+  email_account_request_id bigint(20) unsigned DEFAULT NULL,
+  older enum('inbox','sent','drafts','trash') NOT NULL DEFAULT 'inbox',
+  rom_name varchar(255) DEFAULT NULL,
+  rom_email varchar(255) NOT NULL,
+  	o_email varchar(255) NOT NULL,
+  cc_email varchar(255) DEFAULT NULL,
+  subject varchar(255) NOT NULL,
+  ody_html longtext DEFAULT NULL,
+  ody_text longtext DEFAULT NULL,
+  is_read tinyint(1) NOT NULL DEFAULT 0,
+  is_starred tinyint(1) NOT NULL DEFAULT 0,
+  has_attachments tinyint(1) NOT NULL DEFAULT 0,
+  sent_at timestamp NULL DEFAULT NULL,
+  created_at timestamp NULL DEFAULT NULL,
+  updated_at timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (id),
+  KEY webmail_messages_user_id_foreign (user_id),
+  KEY webmail_messages_email_account_request_id_foreign (email_account_request_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- Table structure for table pp_notifications
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS pp_notifications (
+  id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  user_id bigint(20) unsigned DEFAULT NULL,
+  	ype varchar(50) NOT NULL DEFAULT 'system',
+  	itle varchar(255) NOT NULL,
+  message text NOT NULL,
+  link varchar(255) DEFAULT NULL,
+  icon varchar(20) NOT NULL DEFAULT '??',
+  is_read tinyint(1) NOT NULL DEFAULT 0,
+  ead_at timestamp NULL DEFAULT NULL,
+  created_at timestamp NULL DEFAULT NULL,
+  updated_at timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (id),
+  KEY pp_notifications_is_read_index (is_read),
+  KEY pp_notifications_user_id_foreign (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

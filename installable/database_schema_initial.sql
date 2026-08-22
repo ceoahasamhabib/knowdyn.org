@@ -1,7 +1,7 @@
 -- ========================================================
 -- Knowledge Dynamics — 100% Accurate Production Database Dump
 -- Database: kdpuodtp_kdpub | Domain: https://kdpub.com
--- Generated: 2026-08-22 20:08:50
+-- Generated: 2026-08-22 21:22:42
 -- Compatible with MySQL 5.7+, 8.0+, MariaDB 10.3+
 -- ========================================================
 
