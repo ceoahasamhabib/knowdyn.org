@@ -77,29 +77,23 @@ const triggerClearCache = () => {
                         <h1 class="text-xl font-bold text-gray-900 flex items-center gap-2">
                             <span class="text-indigo-600">⚡</span> Universal System Updater & Maintenance
                         </h1>
-                        <span class="px-2 py-0.5 text-[11px] font-mono font-bold rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">
-                            v1.2.0-STABLE
+                        <span class="px-2 py-0.5 text-[11px] font-mono font-bold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            v2.0-INCREMENTAL
                         </span>
                     </div>
                     <p class="text-xs text-gray-500 mt-0.5">
-                        Safely upload code update packages (.ZIP) with zero downtime, automatic rollback snapshots, and non-destructive database migrations.
+                        Safely upload lightweight update packages (~600 KB) with zero downtime, automatic rollback snapshots, and automated background migrations.
                     </p>
                 </div>
 
                 <div class="flex items-center gap-2">
                     <button 
-                        @click="triggerMigrate" 
-                        :disabled="isMigrating"
-                        class="px-3.5 py-2 text-xs font-semibold rounded-lg bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-indigo-600 flex items-center gap-1.5 shadow-sm transition disabled:opacity-60"
-                    >
-                        <span>🔄</span> {{ isMigrating ? 'Running...' : 'Run DB Migrations' }}
-                    </button>
-                    <button 
                         @click="triggerClearCache" 
                         :disabled="isClearingCache"
                         class="px-3.5 py-2 text-xs font-semibold rounded-lg bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-indigo-600 flex items-center gap-1.5 shadow-sm transition disabled:opacity-60"
+                        title="Purge compiled Blade, route and configuration caches"
                     >
-                        <span>🧹</span> {{ isClearingCache ? 'Clearing...' : 'Clear Caches' }}
+                        <span>🧹</span> {{ isClearingCache ? 'Clearing...' : 'Clear App Cache' }}
                     </button>
                 </div>
             </div>
