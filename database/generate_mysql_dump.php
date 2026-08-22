@@ -5,8 +5,16 @@ $app = require_once __DIR__ . '/../bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
+config([
+    'database.default' => 'sqlite',
+    'database.connections.sqlite.database' => base_path('kdpuodtp_kdpub'),
+]);
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+
+DB::purge();
+DB::reconnect();
 
 $outputSql = "-- ========================================================\n";
 $outputSql .= "-- Knowledge Dynamics — Complete Production Database Dump\n";
@@ -21,7 +29,9 @@ $outputSql .= "SET AUTOCOMMIT = 0;\n";
 $outputSql .= "START TRANSACTION;\n";
 $outputSql .= "SET time_zone = '+00:00';\n\n";
 
-// Table Creation Definitions tailored for standard MySQL with utf8mb4 and safe index lengths (<=191 chars)
+$tables = DB::select("SELECT name, sql FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+
+// Explicit MySQL Table Schemas matching Laravel Migrations exactly
 $tableSchemas = [
     'migrations' => "CREATE TABLE `migrations` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -30,68 +40,25 @@ $tableSchemas = [
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
 
-    'roles' => "CREATE TABLE `roles` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(191) NOT NULL,
-  `guard_name` varchar(191) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `roles_name_guard_name_unique` (`name`,`guard_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
-
-    'permissions' => "CREATE TABLE `permissions` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(191) NOT NULL,
-  `guard_name` varchar(191) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
-
-    'model_has_roles' => "CREATE TABLE `model_has_roles` (
-  `role_id` bigint(20) unsigned NOT NULL,
-  `model_type` varchar(191) NOT NULL,
-  `model_id` bigint(20) unsigned NOT NULL,
-  PRIMARY KEY (`role_id`,`model_id`,`model_type`),
-  KEY `model_has_roles_model_id_model_type_index` (`model_id`,`model_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
-
-    'model_has_permissions' => "CREATE TABLE `model_has_permissions` (
-  `permission_id` bigint(20) unsigned NOT NULL,
-  `model_type` varchar(191) NOT NULL,
-  `model_id` bigint(20) unsigned NOT NULL,
-  PRIMARY KEY (`permission_id`,`model_id`,`model_type`),
-  KEY `model_has_permissions_model_id_model_type_index` (`model_id`,`model_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
-
-    'role_has_permissions' => "CREATE TABLE `role_has_permissions` (
-  `permission_id` bigint(20) unsigned NOT NULL,
-  `role_id` bigint(20) unsigned NOT NULL,
-  PRIMARY KEY (`permission_id`,`role_id`),
-  KEY `role_has_permissions_role_id_foreign` (`role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
-
     'users' => "CREATE TABLE `users` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(191) NOT NULL,
+  `first_name` varchar(100) DEFAULT NULL,
+  `last_name` varchar(100) DEFAULT NULL,
+  `username` varchar(50) DEFAULT NULL,
   `email` varchar(191) NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `avatar` varchar(500) DEFAULT NULL,
+  `status` enum('active','inactive','suspended') NOT NULL DEFAULT 'active',
   `password` varchar(191) NOT NULL,
   `remember_token` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `affiliation` varchar(191) DEFAULT NULL,
-  `country` varchar(191) DEFAULT NULL,
-  `orcid_id` varchar(191) DEFAULT NULL,
-  `bio` text DEFAULT NULL,
-  `avatar_url` varchar(191) DEFAULT NULL,
-  `phone` varchar(191) DEFAULT NULL,
-  `google_scholar_url` varchar(191) DEFAULT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `users_email_unique` (`email`)
+  UNIQUE KEY `users_email_unique` (`email`),
+  UNIQUE KEY `users_username_unique` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
 
     'password_reset_tokens' => "CREATE TABLE `password_reset_tokens` (
@@ -163,6 +130,73 @@ $tableSchemas = [
   `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+    'roles' => "CREATE TABLE `roles` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(191) NOT NULL,
+  `guard_name` varchar(191) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `roles_name_guard_name_unique` (`name`,`guard_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+    'permissions' => "CREATE TABLE `permissions` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(191) NOT NULL,
+  `guard_name` varchar(191) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+    'model_has_roles' => "CREATE TABLE `model_has_roles` (
+  `role_id` bigint(20) unsigned NOT NULL,
+  `model_type` varchar(191) NOT NULL,
+  `model_id` bigint(20) unsigned NOT NULL,
+  PRIMARY KEY (`role_id`,`model_id`,`model_type`),
+  KEY `model_has_roles_model_id_model_type_index` (`model_id`,`model_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+    'model_has_permissions' => "CREATE TABLE `model_has_permissions` (
+  `permission_id` bigint(20) unsigned NOT NULL,
+  `model_type` varchar(191) NOT NULL,
+  `model_id` bigint(20) unsigned NOT NULL,
+  PRIMARY KEY (`permission_id`,`model_id`,`model_type`),
+  KEY `model_has_permissions_model_id_model_type_index` (`model_id`,`model_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+    'role_has_permissions' => "CREATE TABLE `role_has_permissions` (
+  `permission_id` bigint(20) unsigned NOT NULL,
+  `role_id` bigint(20) unsigned NOT NULL,
+  PRIMARY KEY (`permission_id`,`role_id`),
+  KEY `role_has_permissions_role_id_foreign` (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+    'researcher_profiles' => "CREATE TABLE `researcher_profiles` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `affiliation` varchar(191) DEFAULT NULL,
+  `department` varchar(191) DEFAULT NULL,
+  `country` varchar(191) DEFAULT NULL,
+  `orcid_id` varchar(191) DEFAULT NULL,
+  `scopus_id` varchar(191) DEFAULT NULL,
+  `researcher_id` varchar(191) DEFAULT NULL,
+  `google_scholar_url` varchar(191) DEFAULT NULL,
+  `research_interests` text DEFAULT NULL,
+  `bio` text DEFAULT NULL,
+  `qualification` varchar(191) DEFAULT NULL,
+  `h_index` int(11) NOT NULL DEFAULT 0,
+  `i10_index` int(11) NOT NULL DEFAULT 0,
+  `total_citations` int(11) NOT NULL DEFAULT 0,
+  `total_publications` int(11) NOT NULL DEFAULT 0,
+  `is_verified` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `researcher_profiles_user_id_foreign` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
 
     'publishers' => "CREATE TABLE `publishers` (
@@ -302,6 +336,125 @@ $tableSchemas = [
   KEY `article_authors_article_id_foreign` (`article_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
 
+    'article_metrics' => "CREATE TABLE `article_metrics` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `article_id` bigint(20) unsigned NOT NULL,
+  `views` int(11) NOT NULL DEFAULT 0,
+  `pdf_downloads` int(11) NOT NULL DEFAULT 0,
+  `xml_downloads` int(11) NOT NULL DEFAULT 0,
+  `citations` int(11) NOT NULL DEFAULT 0,
+  `altmetric_score` int(11) NOT NULL DEFAULT 0,
+  `recorded_date` date NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `article_metrics_article_id_foreign` (`article_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+    'manuscript_submissions' => "CREATE TABLE `manuscript_submissions` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `tracking_number` varchar(191) NOT NULL,
+  `journal_id` bigint(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `title` varchar(500) NOT NULL,
+  `abstract` longtext NOT NULL,
+  `keywords` text DEFAULT NULL,
+  `article_type` varchar(191) NOT NULL DEFAULT 'Research Article',
+  `status` varchar(191) NOT NULL DEFAULT 'submitted',
+  `current_round` int(11) NOT NULL DEFAULT 1,
+  `submitted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `manuscript_submissions_tracking_number_unique` (`tracking_number`),
+  KEY `manuscript_submissions_journal_id_foreign` (`journal_id`),
+  KEY `manuscript_submissions_user_id_foreign` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+    'manuscript_files' => "CREATE TABLE `manuscript_files` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `manuscript_submission_id` bigint(20) unsigned NOT NULL,
+  `file_type` varchar(191) NOT NULL DEFAULT 'manuscript',
+  `file_path` varchar(191) NOT NULL,
+  `original_name` varchar(191) NOT NULL,
+  `file_size` bigint(20) DEFAULT NULL,
+  `mime_type` varchar(191) DEFAULT NULL,
+  `round` int(11) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `manuscript_files_manuscript_submission_id_foreign` (`manuscript_submission_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+    'manuscript_reviewers' => "CREATE TABLE `manuscript_reviewers` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `manuscript_submission_id` bigint(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `status` varchar(191) NOT NULL DEFAULT 'pending',
+  `invited_at` timestamp NULL DEFAULT NULL,
+  `responded_at` timestamp NULL DEFAULT NULL,
+  `due_date` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `manuscript_reviewers_manuscript_submission_id_foreign` (`manuscript_submission_id`),
+  KEY `manuscript_reviewers_user_id_foreign` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+    'peer_reviews' => "CREATE TABLE `peer_reviews` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `manuscript_submission_id` bigint(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `round` int(11) NOT NULL DEFAULT 1,
+  `recommendation` varchar(191) NOT NULL,
+  `comments_to_author` longtext DEFAULT NULL,
+  `comments_to_editor` longtext DEFAULT NULL,
+  `score_novelty` int(11) DEFAULT NULL,
+  `score_methodology` int(11) DEFAULT NULL,
+  `score_clarity` int(11) DEFAULT NULL,
+  `score_overall` int(11) DEFAULT NULL,
+  `status` varchar(191) NOT NULL DEFAULT 'completed',
+  `submitted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `peer_reviews_manuscript_submission_id_foreign` (`manuscript_submission_id`),
+  KEY `peer_reviews_user_id_foreign` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+    'freelance_projects' => "CREATE TABLE `freelance_projects` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `title` varchar(191) NOT NULL,
+  `slug` varchar(191) NOT NULL,
+  `category` varchar(191) NOT NULL,
+  `description` longtext NOT NULL,
+  `budget_min` decimal(8,2) DEFAULT NULL,
+  `budget_max` decimal(8,2) DEFAULT NULL,
+  `deadline` date DEFAULT NULL,
+  `status` varchar(191) NOT NULL DEFAULT 'open',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `freelance_projects_slug_unique` (`slug`),
+  KEY `freelance_projects_user_id_foreign` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+    'freelance_proposals' => "CREATE TABLE `freelance_proposals` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `freelance_project_id` bigint(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `bid_amount` decimal(8,2) NOT NULL,
+  `estimated_days` int(11) NOT NULL,
+  `cover_letter` longtext NOT NULL,
+  `status` varchar(191) NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `freelance_proposals_freelance_project_id_foreign` (`freelance_project_id`),
+  KEY `freelance_proposals_user_id_foreign` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
     'publishing_services' => "CREATE TABLE `publishing_services` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(191) NOT NULL,
@@ -318,6 +471,24 @@ $tableSchemas = [
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `publishing_services_slug_unique` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+    'service_orders' => "CREATE TABLE `service_orders` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `order_number` varchar(191) NOT NULL,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `publishing_service_id` bigint(20) unsigned NOT NULL,
+  `total_amount` decimal(8,2) NOT NULL,
+  `status` varchar(191) NOT NULL DEFAULT 'pending',
+  `instructions` text DEFAULT NULL,
+  `file_path` varchar(191) DEFAULT NULL,
+  `completed_file_path` varchar(191) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `service_orders_order_number_unique` (`order_number`),
+  KEY `service_orders_user_id_foreign` (`user_id`),
+  KEY `service_orders_publishing_service_id_foreign` (`publishing_service_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
 
     'email_account_requests' => "CREATE TABLE `email_account_requests` (
@@ -485,4 +656,4 @@ file_put_contents(__DIR__ . '/database_backup_production.sql', $outputSql);
 file_put_contents(__DIR__ . '/../installable/database_schema_initial.sql', $outputSql);
 file_put_contents('C:/Users/User/Desktop/kdpub_database.sql', $outputSql);
 
-echo "Successfully generated database_backup_production.sql, installable/database_schema_initial.sql, and C:/Users/User/Desktop/kdpub_database.sql!\n";
+echo "SUCCESS! Created accurate MySQL dump with matching columns and seeded data.\n";
