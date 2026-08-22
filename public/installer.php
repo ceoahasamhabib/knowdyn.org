@@ -240,6 +240,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errorMessage = "Admin user creation failed: " . $e->getMessage();
             }
         }
+    } elseif ($action === 'clear_all_caches') {
+        try {
+            // Delete bootstrap cache files
+            foreach (glob($basePath . '/bootstrap/cache/*.php') as $f) {
+                @unlink($f);
+            }
+            // Delete view cache files
+            foreach (glob($basePath . '/storage/framework/views/*.php') as $f) {
+                @unlink($f);
+            }
+            // Delete sessions/cache
+            foreach (glob($basePath . '/storage/framework/cache/data/*') as $f) {
+                if (is_file($f)) @unlink($f);
+            }
+
+            if ($laravelLoaded) {
+                \Illuminate\Support\Facades\Artisan::call('config:clear');
+                \Illuminate\Support\Facades\Artisan::call('route:clear');
+                \Illuminate\Support\Facades\Artisan::call('view:clear');
+                \Illuminate\Support\Facades\Artisan::call('cache:clear');
+            }
+            $statusMessage = "All application caches & compiled views cleared successfully!";
+        } catch (\Throwable $e) {
+            $errorMessage = "Error clearing cache: " . $e->getMessage();
+        }
+    } elseif ($action === 'toggle_debug') {
+        $currentDebug = ($currentEnv['APP_DEBUG'] ?? 'false') === 'true';
+        updateEnvFile($envPath, ['APP_DEBUG' => $currentDebug ? 'false' : 'true']);
+        $statusMessage = "APP_DEBUG set to: " . ($currentDebug ? 'false' : 'true');
     }
 }
 
