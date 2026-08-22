@@ -187,6 +187,13 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::post('/cpanel-email/requests/{emailRequest}/approve', [\App\Http\Controllers\Admin\AdminCpanelEmailController::class, 'approve'])->name('cpanel.approve');
     Route::post('/cpanel-email/requests/{emailRequest}/reject', [\App\Http\Controllers\Admin\AdminCpanelEmailController::class, 'reject'])->name('cpanel.reject');
     Route::delete('/cpanel-email/accounts/{emailRequest}', [\App\Http\Controllers\Admin\AdminCpanelEmailController::class, 'deleteAccount'])->name('cpanel.delete_account');
+
+    // Universal System Updater & Maintenance
+    Route::get('/system-updater', [\App\Http\Controllers\Admin\AdminSystemUpdaterController::class, 'index'])->name('system_updater.index');
+    Route::post('/system-updater/upload', [\App\Http\Controllers\Admin\AdminSystemUpdaterController::class, 'upload'])->name('system_updater.upload');
+    Route::post('/system-updater/migrate', [\App\Http\Controllers\Admin\AdminSystemUpdaterController::class, 'migrate'])->name('system_updater.migrate');
+    Route::post('/system-updater/clear-cache', [\App\Http\Controllers\Admin\AdminSystemUpdaterController::class, 'clearCache'])->name('system_updater.clear_cache');
+    Route::get('/system-updater/health', [\App\Http\Controllers\Admin\AdminSystemUpdaterController::class, 'healthCheck'])->name('system_updater.health');
 });
 
 require __DIR__.'/auth.php';
