@@ -38,19 +38,33 @@ class AuditLog extends Model
      */
     public static function record(
         string $action,
-        ?Model $model = null,
+        mixed $model = null,
         ?array $oldValues = null,
         ?array $newValues = null,
-    ): self {
-        return self::create([
-            'user_id' => auth()->id(),
-            'action' => $action,
-            'auditable_type' => $model ? get_class($model) : null,
-            'auditable_id' => $model?->getKey(),
-            'old_values' => $oldValues,
-            'new_values' => $newValues,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-        ]);
+    ): ?self {
+        try {
+            $auditableType = null;
+            $auditableId = null;
+
+            if ($model instanceof Model) {
+                $auditableType = get_class($model);
+                $auditableId = $model->getKey();
+            } elseif (is_string($model)) {
+                $auditableType = $model;
+            }
+
+            return self::create([
+                'user_id' => auth()->id(),
+                'action' => $action,
+                'auditable_type' => $auditableType,
+                'auditable_id' => $auditableId,
+                'old_values' => $oldValues,
+                'new_values' => $newValues,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 }

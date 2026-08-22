@@ -46,12 +46,17 @@ class AdminSystemUpdaterController extends Controller
         try {
             $result = $this->updaterService->processZipUpdate($request->file('update_zip'));
 
-            // Log update action in audit log
-            AuditLog::record(
-                Auth::id(),
-                'system_update',
-                'System updated via ZIP payload (' . ($result['files_count'] ?? 0) . ' files synchronized)'
-            );
+            // Safely log update action in audit log
+            try {
+                AuditLog::record(
+                    'system_update',
+                    null,
+                    null,
+                    ['files_count' => $result['files_count'] ?? 0, 'status' => 'success']
+                );
+            } catch (\Throwable $logEx) {
+                // Ignore audit log error so update succeeds
+            }
 
             return back()->with('success', $result['message']);
         } catch (\Throwable $e) {
