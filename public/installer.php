@@ -98,6 +98,7 @@ if (file_exists($basePath . '/vendor/autoload.php') && file_exists($basePath . '
         $app = require_once $basePath . '/bootstrap/app.php';
         $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
         $kernel->bootstrap();
+        \Illuminate\Support\Facades\Schema::defaultStringLength(191);
         $laravelLoaded = true;
     } catch (\Throwable $e) {
         $laravelLoaded = false;
@@ -158,6 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errorMessage = "Laravel engine could not be booted. Please check vendor files.";
         } else {
             try {
+                \Illuminate\Support\Facades\Schema::defaultStringLength(191);
                 \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
                 $migrateOut = \Illuminate\Support\Facades\Artisan::output();
 

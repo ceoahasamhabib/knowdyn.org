@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Fix MySQL/MariaDB key length limit (1071 error) on shared hosting
+        Schema::defaultStringLength(191);
+
         Vite::prefetch(concurrency: 3);
 
         // Super-admin bypasses all authorization checks

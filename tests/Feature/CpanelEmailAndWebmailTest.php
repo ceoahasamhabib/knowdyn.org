@@ -68,6 +68,10 @@ class CpanelEmailAndWebmailTest extends TestCase
 
     public function test_admin_can_approve_email_request(): void
     {
+        $mockCpanel = \Mockery::mock(\App\Services\CpanelApiService::class);
+        $mockCpanel->shouldReceive('createEmailAccount')->andReturn(['success' => true, 'message' => 'Created']);
+        $this->app->instance(\App\Services\CpanelApiService::class, $mockCpanel);
+
         $request = EmailAccountRequest::create([
             'user_id' => $this->user->id,
             'requested_username' => 'dr.scholar',

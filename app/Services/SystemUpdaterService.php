@@ -136,6 +136,7 @@ class SystemUpdaterService
         // Step 5: Safe Non-Destructive Database Migrations
         $migrationOutput = "No new migrations.";
         try {
+            \Illuminate\Support\Facades\Schema::defaultStringLength(191);
             Artisan::call('migrate', ['--force' => true]);
             $migrationOutput = trim(Artisan::output()) ?: "All database tables are up to date.";
             $logs[] = "Database Migrations: " . $migrationOutput;
