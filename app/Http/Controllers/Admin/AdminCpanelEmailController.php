@@ -19,11 +19,11 @@ class AdminCpanelEmailController extends Controller
     public function index(CpanelApiService $cpanel): Response
     {
         $settings = [
-            'cpanel_host' => SiteSetting::get('cpanel_host', 'cpanel.knowdyn.org'),
-            'cpanel_username' => SiteSetting::get('cpanel_username', 'knowdyn'),
-            'cpanel_api_token' => SiteSetting::get('cpanel_api_token', 'EQDJGQU1P0BZN6RXTYZFY6NVL6DZ4C7Q'),
-            'cpanel_default_domain' => SiteSetting::get('cpanel_default_domain', 'knowdyn.org'),
-            'cpanel_port' => SiteSetting::get('cpanel_port', '2083'),
+            'cpanel_host' => SiteSetting::get('cpanel_host', config('services.cpanel.host', 'kdpub.com')),
+            'cpanel_username' => SiteSetting::get('cpanel_username', config('services.cpanel.username', 'kdpuodtp')),
+            'cpanel_api_token' => SiteSetting::get('cpanel_api_token', config('services.cpanel.api_token', 'EQDJGQU1P0BZN6RXTYZFY6NVL6DZ4C7Q')),
+            'cpanel_default_domain' => SiteSetting::get('cpanel_default_domain', config('services.cpanel.domain', 'kdpub.com')),
+            'cpanel_port' => SiteSetting::get('cpanel_port', config('services.cpanel.port', 2083)),
         ];
 
         $requests = EmailAccountRequest::with('user')

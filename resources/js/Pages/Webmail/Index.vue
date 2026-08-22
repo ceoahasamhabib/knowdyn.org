@@ -13,7 +13,7 @@ const props = defineProps({
     },
     defaultDomain: {
         type: String,
-        default: 'knowdyn.org',
+        default: 'kdpub.com',
     },
     currentFolder: {
         type: String,
