@@ -33,10 +33,10 @@ const journalsList = [
     <div class="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans selection:bg-rose-500 selection:text-white" @click="closeDropdowns">
         <!-- ── Desktop Navigation ────────────────────────────── -->
         <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs" @click.stop>
-            <!-- Top Dark Bar with comfortable padding -->
-            <div class="hidden lg:block bg-[#050811] text-slate-300 border-b border-slate-800/80">
+            <!-- Top Dark Bar -->
+            <div class="hidden lg:block bg-[#070c18] text-slate-300 border-b border-slate-800">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-2 text-xs">
-                    <div class="flex items-center gap-4 text-slate-400">
+                    <div class="flex items-center gap-4 text-slate-300">
                         <span class="flex items-center gap-2 font-medium">
                             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                             Research • Publish • Discover
@@ -45,19 +45,19 @@ const journalsList = [
                         <span class="text-slate-400 font-medium">ISSN Registered International Academic Publisher</span>
                     </div>
                     <div class="flex items-center gap-5 font-medium">
-                        <Link :href="route('proofreading.index')" class="text-rose-400 hover:text-rose-300 font-bold transition">KD Proofreading</Link>
-                        <Link :href="route('books.index')" class="text-slate-300 hover:text-white transition">Books</Link>
-                        <Link :href="route('news.index')" class="text-slate-300 hover:text-white transition">News & Events</Link>
+                        <Link :href="route('proofreading.index')" class="text-rose-400 hover:text-rose-300 font-bold transition whitespace-nowrap">KD Proofreading</Link>
+                        <Link :href="route('books.index')" class="text-slate-300 hover:text-white transition whitespace-nowrap">Books</Link>
+                        <Link :href="route('news.index')" class="text-slate-300 hover:text-white transition whitespace-nowrap">News & Events</Link>
                         <span class="text-slate-700">|</span>
                         <template v-if="user">
-                            <Link :href="route('dashboard')" class="text-white font-bold hover:text-indigo-300 flex items-center gap-2 transition">
+                            <Link :href="route('dashboard')" class="text-white font-bold hover:text-indigo-300 flex items-center gap-2 transition whitespace-nowrap">
                                 <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
                                 Dashboard ({{ user.name }})
                             </Link>
                         </template>
                         <template v-else>
-                            <Link :href="route('login')" class="text-slate-300 hover:text-white transition">Sign In</Link>
-                            <Link :href="route('register')" class="text-indigo-400 hover:text-indigo-300 font-bold transition">Register</Link>
+                            <Link :href="route('login')" class="text-slate-300 hover:text-white font-semibold transition whitespace-nowrap">Sign In</Link>
+                            <Link :href="route('register')" class="text-indigo-400 hover:text-indigo-300 font-bold transition whitespace-nowrap">Register</Link>
                         </template>
                     </div>
                 </div>
@@ -74,154 +74,166 @@ const journalsList = [
                             </div>
                         </div>
                         <div>
-                            <span class="font-extrabold text-lg lg:text-xl text-slate-900 tracking-tight flex items-center gap-1.5">
+                            <span class="font-extrabold text-lg lg:text-xl text-slate-900 tracking-tight flex items-center gap-1.5 whitespace-nowrap">
                                 Knowledge Dynamics
                                 <span class="px-1.5 py-0.5 text-[10px] font-bold bg-indigo-50 text-indigo-700 rounded-md border border-indigo-200">
                                     Scholar
                                 </span>
                             </span>
-                            <span class="block text-[10px] text-slate-500 tracking-wider uppercase font-semibold">
+                            <span class="block text-[10px] text-slate-500 tracking-wider uppercase font-semibold whitespace-nowrap">
                                 Open Access Publishing & Research
                             </span>
                         </div>
                     </Link>
 
-                    <!-- Desktop Mega Menu Items -->
+                    <!-- Desktop Mega Menu Items with Seamless Hover Bridge -->
                     <div class="hidden lg:flex items-center gap-1">
                         <!-- About -->
-                        <div class="relative group">
+                        <div class="relative group py-2">
                             <button
                                 @click="toggleDropdown('about')"
-                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition"
+                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition whitespace-nowrap"
                             >
                                 About
                                 <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            <div class="dropdown-menu">
-                                <Link :href="route('about')" class="dropdown-item font-bold text-slate-900">About Knowledge Dynamics</Link>
-                                <Link href="/about#mission" class="dropdown-item">Mission, Vision & History</Link>
-                                <Link :href="route('contact')" class="dropdown-item">Contact & Editorial Desk</Link>
+                            <div class="dropdown-wrapper">
+                                <div class="dropdown-content min-w-[240px]">
+                                    <Link :href="route('about')" class="dropdown-item font-bold text-slate-900">About Knowledge Dynamics</Link>
+                                    <Link href="/about#mission" class="dropdown-item">Mission, Vision & History</Link>
+                                    <Link :href="route('contact')" class="dropdown-item">Contact & Editorial Desk</Link>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Publish with us -->
-                        <div class="relative group">
+                        <div class="relative group py-2">
                             <button
                                 @click="toggleDropdown('publish')"
-                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition"
+                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition whitespace-nowrap"
                             >
                                 Publish With Us
                                 <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            <div class="dropdown-menu">
-                                <Link :href="route('manuscripts.create')" class="dropdown-item font-bold text-indigo-600">Submit Manuscript</Link>
-                                <Link :href="route('publish.open_access')" class="dropdown-item">Open Access Policy (CC BY 4.0)</Link>
-                                <Link :href="route('books.propose')" class="dropdown-item">Publish Book / Monograph</Link>
-                                <Link :href="route('proofreading.index')" class="dropdown-item">Language & Proofreading Services</Link>
+                            <div class="dropdown-wrapper">
+                                <div class="dropdown-content min-w-[260px]">
+                                    <Link :href="route('manuscripts.create')" class="dropdown-item font-bold text-indigo-600">Submit Manuscript</Link>
+                                    <Link :href="route('publish.open_access')" class="dropdown-item">Open Access Policy (CC BY 4.0)</Link>
+                                    <Link :href="route('books.propose')" class="dropdown-item">Publish Book / Monograph</Link>
+                                    <Link :href="route('proofreading.index')" class="dropdown-item">Language & Proofreading Services</Link>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Journals -->
-                        <div class="relative group">
+                        <div class="relative group py-2">
                             <button
                                 @click="toggleDropdown('journals')"
-                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition"
+                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition whitespace-nowrap"
                             >
                                 Journals
                                 <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            <div class="dropdown-menu w-72">
-                                <div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
-                                    Peer-Reviewed Portals
-                                </div>
-                                <Link v-for="j in journalsList" :key="j.href" :href="j.href" class="dropdown-item font-medium">
-                                    {{ j.name }}
-                                </Link>
-                                <div class="border-t border-slate-100 mt-1 pt-1">
-                                    <Link :href="route('journals.index')" class="dropdown-item font-bold text-indigo-600">
-                                        View All Journals →
+                            <div class="dropdown-wrapper">
+                                <div class="dropdown-content w-80">
+                                    <div class="px-4 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                                        Peer-Reviewed Journals
+                                    </div>
+                                    <Link v-for="j in journalsList" :key="j.href" :href="j.href" class="dropdown-item font-medium">
+                                        {{ j.name }}
                                     </Link>
+                                    <div class="border-t border-slate-100 mt-1 pt-1">
+                                        <Link :href="route('journals.index')" class="dropdown-item font-bold text-indigo-600">
+                                            View All Journals →
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Books -->
-                        <div class="relative group">
+                        <div class="relative group py-2">
                             <button
                                 @click="toggleDropdown('books')"
-                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition"
+                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition whitespace-nowrap"
                             >
                                 Books
                                 <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            <div class="dropdown-menu">
-                                <Link :href="route('books.index')" class="dropdown-item font-bold text-slate-900">Academic Books & Monographs</Link>
-                                <Link href="/books?format=ebook" class="dropdown-item">eBooks Catalog</Link>
-                                <Link :href="route('books.propose')" class="dropdown-item font-medium text-indigo-600">Propose a Book</Link>
+                            <div class="dropdown-wrapper">
+                                <div class="dropdown-content min-w-[240px]">
+                                    <Link :href="route('books.index')" class="dropdown-item font-bold text-slate-900">Academic Books & Monographs</Link>
+                                    <Link href="/books?format=ebook" class="dropdown-item">eBooks Catalog</Link>
+                                    <Link :href="route('books.propose')" class="dropdown-item font-medium text-indigo-600">Propose a Book</Link>
+                                </div>
                             </div>
                         </div>
 
                         <!-- KD Proofreading -->
-                        <div class="relative group">
+                        <div class="relative group py-2">
                             <button
                                 @click="toggleDropdown('proofreading')"
-                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-rose-600 hover:text-rose-700 rounded-lg flex items-center gap-1.5 transition"
+                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-rose-600 hover:text-rose-700 rounded-lg flex items-center gap-1.5 transition whitespace-nowrap"
                             >
                                 KD Proofreading
                                 <svg class="w-3.5 h-3.5 text-rose-400 group-hover:text-rose-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            <div class="dropdown-menu w-64">
-                                <Link :href="route('proofreading.index')" class="dropdown-item font-bold text-slate-900">About KD Proofreading</Link>
-                                <div class="px-3 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Services</div>
-                                <Link :href="route('proofreading.index')" class="dropdown-item pl-5">Proofreading & Editing</Link>
-                                <Link :href="route('services.show', 'academic-translation')" class="dropdown-item pl-5">Translation</Link>
-                                <Link :href="route('services.show', 'academic-formatting')" class="dropdown-item pl-5">Formatting</Link>
-                                <Link :href="route('services.show', 'plagiarism-screening')" class="dropdown-item pl-5">Similarity Reduction</Link>
-                                <Link :href="route('services.show', 'ai-index-reduction')" class="dropdown-item pl-5">AI Index Reduction</Link>
-                                <div class="border-t border-slate-100 mt-1 pt-1">
-                                    <Link :href="route('proofreading.freelancers')" class="dropdown-item">Our Expert Freelancers</Link>
-                                    <Link href="/proofreading#calculator" class="dropdown-item">Service Fee Calculator</Link>
-                                    <Link href="/proofreading#submit" class="dropdown-item font-bold text-rose-600">Submit Document →</Link>
+                            <div class="dropdown-wrapper">
+                                <div class="dropdown-content min-w-[260px]">
+                                    <Link :href="route('proofreading.index')" class="dropdown-item font-bold text-slate-900">About KD Proofreading</Link>
+                                    <div class="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Services</div>
+                                    <Link :href="route('proofreading.index')" class="dropdown-item pl-5">Proofreading & Editing</Link>
+                                    <Link :href="route('services.show', 'academic-translation')" class="dropdown-item pl-5">Translation</Link>
+                                    <Link :href="route('services.show', 'academic-formatting')" class="dropdown-item pl-5">Formatting</Link>
+                                    <Link :href="route('services.show', 'plagiarism-screening')" class="dropdown-item pl-5">Similarity Reduction</Link>
+                                    <Link :href="route('services.show', 'ai-index-reduction')" class="dropdown-item pl-5">AI Index Reduction</Link>
+                                    <div class="border-t border-slate-100 mt-1 pt-1">
+                                        <Link :href="route('proofreading.freelancers')" class="dropdown-item">Our Expert Freelancers</Link>
+                                        <Link href="/proofreading#calculator" class="dropdown-item">Service Fee Calculator</Link>
+                                        <Link href="/proofreading#submit" class="dropdown-item font-bold text-rose-600">Submit Document →</Link>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- News & Events -->
-                        <div class="relative group">
+                        <div class="relative group py-2">
                             <button
                                 @click="toggleDropdown('news')"
-                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition"
+                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition whitespace-nowrap"
                             >
                                 News & Events
                                 <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            <div class="dropdown-menu">
-                                <Link :href="route('news.index')" class="dropdown-item font-bold text-slate-900">Latest News</Link>
-                                <Link :href="route('events.index')" class="dropdown-item">Academic Events</Link>
-                                <Link :href="route('news.announcements')" class="dropdown-item">Announcements & Calls</Link>
-                                <Link :href="route('events.workshops')" class="dropdown-item">Seminars & Workshops</Link>
-                                <Link :href="route('careers.index')" class="dropdown-item font-medium text-indigo-600">Careers & Fellowships</Link>
+                            <div class="dropdown-wrapper">
+                                <div class="dropdown-content min-w-[240px]">
+                                    <Link :href="route('news.index')" class="dropdown-item font-bold text-slate-900">Latest News</Link>
+                                    <Link :href="route('events.index')" class="dropdown-item">Academic Events</Link>
+                                    <Link :href="route('news.announcements')" class="dropdown-item">Announcements & Calls</Link>
+                                    <Link :href="route('events.workshops')" class="dropdown-item">Seminars & Workshops</Link>
+                                    <Link :href="route('careers.index')" class="dropdown-item font-medium text-indigo-600">Careers & Fellowships</Link>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Right CTAs with centered vertical alignment -->
-                    <div class="flex items-center gap-3">
+                    <!-- Right CTAs -->
+                    <div class="flex items-center gap-3 shrink-0">
                         <Link
                             :href="route('manuscripts.create')"
-                            class="hidden sm:inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-rose-600 hover:from-indigo-500 hover:to-rose-500 text-white font-bold text-xs shadow-md shadow-indigo-500/25 transition duration-300"
+                            class="hidden sm:inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-rose-600 hover:from-indigo-500 hover:to-rose-500 text-white font-bold text-xs shadow-md shadow-indigo-500/25 transition duration-300 whitespace-nowrap"
                         >
                             <span>📝</span>
                             <span>Submit Article</span>
@@ -258,10 +270,10 @@ const journalsList = [
                 </div>
 
                 <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                    <Link :href="route('manuscripts.create')" class="py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-rose-600 text-white font-bold text-xs text-center shadow-md" @click="mobileMenuOpen = false">
+                    <Link :href="route('manuscripts.create')" class="py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-rose-600 text-white font-bold text-xs text-center shadow-md whitespace-nowrap" @click="mobileMenuOpen = false">
                         Submit Research Manuscript
                     </Link>
-                    <Link v-if="!user" :href="route('login')" class="py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs text-center" @click="mobileMenuOpen = false">
+                    <Link v-if="!user" :href="route('login')" class="py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs text-center whitespace-nowrap" @click="mobileMenuOpen = false">
                         Scholar Sign In →
                     </Link>
                 </div>
@@ -292,7 +304,7 @@ const journalsList = [
                             </div>
                         </div>
                         <div>
-                            <span class="text-white font-extrabold text-xl tracking-tight flex items-center gap-2">
+                            <span class="text-white font-extrabold text-xl tracking-tight flex items-center gap-2 whitespace-nowrap">
                                 Knowledge Dynamics
                                 <span class="px-2 py-0.5 text-[10px] font-bold bg-indigo-500/20 text-indigo-300 rounded border border-indigo-500/30">
                                     Scholar
@@ -304,13 +316,13 @@ const journalsList = [
                     <div class="flex flex-wrap gap-3">
                         <Link
                             :href="route('manuscripts.create')"
-                            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-rose-600 hover:from-indigo-500 hover:to-rose-500 text-white font-bold text-xs shadow-md shadow-indigo-500/20 transition"
+                            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-rose-600 hover:from-indigo-500 hover:to-rose-500 text-white font-bold text-xs shadow-md shadow-indigo-500/20 transition whitespace-nowrap"
                         >
                             Submit Article →
                         </Link>
                         <Link
                             :href="route('proofreading.index')"
-                            class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-bold text-xs transition"
+                            class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-bold text-xs transition whitespace-nowrap"
                         >
                             KD Proofreading
                         </Link>
@@ -403,8 +415,8 @@ const journalsList = [
                             <span class="text-indigo-400">◆</span> Portal
                         </h4>
                         <ul class="space-y-2 text-slate-400">
-                            <li><Link :href="route('login')" class="text-indigo-400 hover:text-indigo-300 font-bold hover:translate-x-0.5 inline-block transition">Scholar Sign In ↗</Link></li>
-                            <li><Link :href="route('webmail.index')" class="text-rose-400 hover:text-rose-300 font-bold hover:translate-x-0.5 inline-block transition">cPanel Webmail ↗</Link></li>
+                            <li><Link :href="route('login')" class="text-indigo-400 hover:text-indigo-300 font-bold hover:translate-x-0.5 inline-block transition whitespace-nowrap">Scholar Sign In ↗</Link></li>
+                            <li><Link :href="route('webmail.index')" class="text-rose-400 hover:text-rose-300 font-bold hover:translate-x-0.5 inline-block transition whitespace-nowrap">cPanel Webmail ↗</Link></li>
                             <li><Link :href="route('guidelines.show', 'authors')" class="hover:text-white hover:translate-x-0.5 inline-block transition">Author Guidelines</Link></li>
                             <li><Link :href="route('guidelines.show', 'editorial-policies')" class="hover:text-white hover:translate-x-0.5 inline-block transition">COPE Ethics</Link></li>
                             <li><Link :href="route('support.index')" class="hover:text-white hover:translate-x-0.5 inline-block transition">Help Desk</Link></li>
@@ -418,7 +430,7 @@ const journalsList = [
                         <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                         <span>&copy; {{ new Date().getFullYear() }} Knowledge Dynamics Publishing. All rights reserved.</span>
                     </div>
-                    <div class="flex flex-wrap gap-4 text-slate-400">
+                    <div class="flex flex-wrap gap-4 text-slate-400 font-medium">
                         <Link :href="route('publish.open_access')" class="hover:text-white">Open Access (CC BY 4.0)</Link>
                         <span>•</span>
                         <Link :href="route('guidelines.show', 'editorial-policies')" class="hover:text-white">COPE Publishing Ethics</Link>
@@ -432,11 +444,16 @@ const journalsList = [
 </template>
 
 <style scoped>
-.dropdown-menu {
-    @apply absolute left-0 top-full mt-1 bg-white border border-slate-200/90 rounded-2xl shadow-xl py-2 hidden group-hover:block z-50 min-w-[220px] transition-all;
+/* Seamless dropdown wrapper with continuous mouse hover bridge */
+.dropdown-wrapper {
+    @apply absolute left-0 top-full pt-1.5 hidden group-hover:block z-50 transition-all duration-150;
+}
+
+.dropdown-content {
+    @apply bg-white border border-slate-200/90 rounded-2xl shadow-xl py-2 overflow-hidden;
 }
 
 .dropdown-item {
-    @apply block px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors;
+    @apply block px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 hover:text-indigo-600 font-medium transition-colors whitespace-nowrap;
 }
 </style>
