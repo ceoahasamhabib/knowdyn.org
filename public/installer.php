@@ -160,13 +160,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             try {
                 \Illuminate\Support\Facades\Schema::defaultStringLength(191);
-                \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-                $migrateOut = \Illuminate\Support\Facades\Artisan::output();
 
-                // Run Seeder if requested
-                if (!empty($_POST['seed_database'])) {
-                    \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-                    $seedOut = \Illuminate\Support\Facades\Artisan::output();
+                $doFresh = !empty($_POST['fresh_install']);
+                $doSeed = !empty($_POST['seed_database']);
+
+                if ($doFresh) {
+                    \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
+                        '--force' => true,
+                        '--seed' => $doSeed,
+                    ]);
+                    $migrateOut = \Illuminate\Support\Facades\Artisan::output();
+                } else {
+                    try {
+                        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+                        $migrateOut = \Illuminate\Support\Facades\Artisan::output();
+                    } catch (\Throwable $migErr) {
+                        // Auto-recovery: if previous attempt failed midway leaving tables like 'users'
+                        if (str_contains($migErr->getMessage(), 'already exists') || str_contains($migErr->getMessage(), '1050')) {
+                            \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
+                                '--force' => true,
+                                '--seed' => $doSeed,
+                            ]);
+                            $migrateOut = "Auto-Recovered: Incomplete tables cleaned & Fresh Setup Executed.\n" . \Illuminate\Support\Facades\Artisan::output();
+                            $seededAlready = true;
+                        } else {
+                            throw $migErr;
+                        }
+                    }
+
+                    // Run Seeder if requested and not done yet
+                    if ($doSeed && empty($seededAlready)) {
+                        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+                        $seedOut = \Illuminate\Support\Facades\Artisan::output();
+                    }
                 }
 
                 // Storage link
@@ -188,7 +214,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header("Location: ?key={$secretKey}&step=admin_account");
                 exit;
             } catch (\Throwable $e) {
-                $errorMessage = "Migration execution error: " . $e->getMessage();
+                $errorMessage = "Migration execution error: " . $e->getMessage() . " (Tip: You can check 'Fresh Database Reset' below to clear incomplete tables).";
             }
         }
     } elseif ($action === 'create_admin') {
@@ -480,6 +506,14 @@ $currentEnv = $envExists ? getEnvValues($envPath) : [];
                                 <div>
                                     <div class="font-bold text-slate-200">Seed Default Content & Roles (Recommended)</div>
                                     <div class="text-[11px] text-slate-400">Populate default journals, editorial board, roles (Author, Reviewer, Editor), and CMS settings.</div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-950/60 border border-slate-800 cursor-pointer hover:border-amber-500/50 transition">
+                                <input type="checkbox" name="fresh_install" value="1" checked class="w-4 h-4 rounded text-amber-600 bg-slate-900 border-slate-700">
+                                <div>
+                                    <div class="font-bold text-amber-300">Clean / Fresh Database Reset (Recommended for First-Time Setup)</div>
+                                    <div class="text-[11px] text-slate-400">Wipes any incomplete tables from previous failed attempts and creates a fresh, pristine database.</div>
                                 </div>
                             </label>
                         </div>
