@@ -32,32 +32,32 @@ const journalsList = [
 <template>
     <div class="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans selection:bg-rose-500 selection:text-white" @click="closeDropdowns">
         <!-- ── Desktop Navigation ────────────────────────────── -->
-        <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs" @click.stop>
-            <!-- Top Dark Bar -->
-            <div class="hidden lg:block bg-[#070c18] text-slate-300 border-b border-slate-800/80">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-1.5 text-xs">
+        <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs" @click.stop>
+            <!-- Top Dark Bar with comfortable padding -->
+            <div class="hidden lg:block bg-[#050811] text-slate-300 border-b border-slate-800/80">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-2 text-xs">
                     <div class="flex items-center gap-4 text-slate-400">
-                        <span class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="flex items-center gap-2 font-medium">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                             Research • Publish • Discover
                         </span>
                         <span class="text-slate-700">|</span>
-                        <span>ISSN Registered Academic Publisher</span>
+                        <span class="text-slate-400 font-medium">ISSN Registered International Academic Publisher</span>
                     </div>
-                    <div class="flex items-center gap-4">
-                        <Link :href="route('proofreading.index')" class="text-rose-400 hover:text-rose-300 font-medium">KD Proofreading</Link>
-                        <Link :href="route('books.index')" class="text-slate-300 hover:text-white">Books</Link>
-                        <Link :href="route('news.index')" class="text-slate-300 hover:text-white">News & Events</Link>
+                    <div class="flex items-center gap-5 font-medium">
+                        <Link :href="route('proofreading.index')" class="text-rose-400 hover:text-rose-300 font-bold transition">KD Proofreading</Link>
+                        <Link :href="route('books.index')" class="text-slate-300 hover:text-white transition">Books</Link>
+                        <Link :href="route('news.index')" class="text-slate-300 hover:text-white transition">News & Events</Link>
                         <span class="text-slate-700">|</span>
                         <template v-if="user">
-                            <Link :href="route('dashboard')" class="text-white font-bold hover:text-indigo-300 flex items-center gap-1.5">
+                            <Link :href="route('dashboard')" class="text-white font-bold hover:text-indigo-300 flex items-center gap-2 transition">
                                 <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
                                 Dashboard ({{ user.name }})
                             </Link>
                         </template>
                         <template v-else>
-                            <Link :href="route('login')" class="text-slate-300 hover:text-white font-medium">Login</Link>
-                            <Link :href="route('register')" class="text-indigo-400 hover:text-indigo-300 font-bold">Register</Link>
+                            <Link :href="route('login')" class="text-slate-300 hover:text-white transition">Sign In</Link>
+                            <Link :href="route('register')" class="text-indigo-400 hover:text-indigo-300 font-bold transition">Register</Link>
                         </template>
                     </div>
                 </div>
@@ -66,7 +66,7 @@ const journalsList = [
             <!-- Main Navigation Bar -->
             <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16 lg:h-[72px]">
-                    <!-- Brand Logo Matching Login Panel -->
+                    <!-- Brand Logo -->
                     <Link href="/" class="flex items-center gap-3 group shrink-0">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-blue-600 to-rose-600 p-0.5 shadow-md shadow-indigo-500/20 group-hover:scale-105 transition duration-300">
                             <div class="w-full h-full bg-[#0a101f] rounded-[10px] flex items-center justify-center font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-rose-300 text-sm tracking-wider">
@@ -76,7 +76,7 @@ const journalsList = [
                         <div>
                             <span class="font-extrabold text-lg lg:text-xl text-slate-900 tracking-tight flex items-center gap-1.5">
                                 Knowledge Dynamics
-                                <span class="px-1.5 py-0.5 text-[10px] font-bold bg-indigo-50 text-indigo-700 rounded border border-indigo-200">
+                                <span class="px-1.5 py-0.5 text-[10px] font-bold bg-indigo-50 text-indigo-700 rounded-md border border-indigo-200">
                                     Scholar
                                 </span>
                             </span>
@@ -92,7 +92,7 @@ const journalsList = [
                         <div class="relative group">
                             <button
                                 @click="toggleDropdown('about')"
-                                class="px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1 transition"
+                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition"
                             >
                                 About
                                 <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,7 +110,7 @@ const journalsList = [
                         <div class="relative group">
                             <button
                                 @click="toggleDropdown('publish')"
-                                class="px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1 transition"
+                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition"
                             >
                                 Publish With Us
                                 <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,7 +129,7 @@ const journalsList = [
                         <div class="relative group">
                             <button
                                 @click="toggleDropdown('journals')"
-                                class="px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1 transition"
+                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition"
                             >
                                 Journals
                                 <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,7 +138,7 @@ const journalsList = [
                             </button>
                             <div class="dropdown-menu w-72">
                                 <div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
-                                    Peer-Reviewed Journals
+                                    Peer-Reviewed Portals
                                 </div>
                                 <Link v-for="j in journalsList" :key="j.href" :href="j.href" class="dropdown-item font-medium">
                                     {{ j.name }}
@@ -155,7 +155,7 @@ const journalsList = [
                         <div class="relative group">
                             <button
                                 @click="toggleDropdown('books')"
-                                class="px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1 transition"
+                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition"
                             >
                                 Books
                                 <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,7 +173,7 @@ const journalsList = [
                         <div class="relative group">
                             <button
                                 @click="toggleDropdown('proofreading')"
-                                class="px-3 py-2 text-xs font-bold uppercase tracking-wider text-rose-600 hover:text-rose-700 rounded-lg flex items-center gap-1 transition"
+                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-rose-600 hover:text-rose-700 rounded-lg flex items-center gap-1.5 transition"
                             >
                                 KD Proofreading
                                 <svg class="w-3.5 h-3.5 text-rose-400 group-hover:text-rose-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,7 +200,7 @@ const journalsList = [
                         <div class="relative group">
                             <button
                                 @click="toggleDropdown('news')"
-                                class="px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1 transition"
+                                class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-indigo-600 rounded-lg flex items-center gap-1.5 transition"
                             >
                                 News & Events
                                 <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -217,11 +217,11 @@ const journalsList = [
                         </div>
                     </div>
 
-                    <!-- Right CTAs -->
+                    <!-- Right CTAs with centered vertical alignment -->
                     <div class="flex items-center gap-3">
                         <Link
                             :href="route('manuscripts.create')"
-                            class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-rose-600 hover:from-indigo-500 hover:to-rose-500 text-white font-bold text-xs shadow-md shadow-indigo-500/20 transition duration-300"
+                            class="hidden sm:inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-rose-600 hover:from-indigo-500 hover:to-rose-500 text-white font-bold text-xs shadow-md shadow-indigo-500/25 transition duration-300"
                         >
                             <span>📝</span>
                             <span>Submit Article</span>
@@ -230,7 +230,7 @@ const journalsList = [
                         <!-- Mobile Toggle -->
                         <button
                             @click="mobileMenuOpen = !mobileMenuOpen"
-                            class="lg:hidden p-2 text-slate-700 hover:text-slate-900 rounded-xl bg-slate-100 hover:bg-slate-200 transition"
+                            class="lg:hidden p-2.5 text-slate-700 hover:text-slate-900 rounded-xl bg-slate-100 hover:bg-slate-200 transition"
                         >
                             <svg v-if="!mobileMenuOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -244,7 +244,7 @@ const journalsList = [
             </nav>
 
             <!-- Mobile Navigation Drawer -->
-            <div v-if="mobileMenuOpen" class="lg:hidden border-t border-slate-200 bg-white px-4 py-5 space-y-4 max-h-[80vh] overflow-y-auto">
+            <div v-if="mobileMenuOpen" class="lg:hidden border-t border-slate-200 bg-white px-4 py-5 space-y-4 max-h-[80vh] overflow-y-auto shadow-xl">
                 <div class="space-y-2">
                     <div class="font-bold text-xs uppercase text-slate-400 tracking-wider">Navigation</div>
                     <Link href="/" class="block text-sm font-bold text-slate-900" @click="mobileMenuOpen = false">Home</Link>
@@ -262,7 +262,7 @@ const journalsList = [
                         Submit Research Manuscript
                     </Link>
                     <Link v-if="!user" :href="route('login')" class="py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs text-center" @click="mobileMenuOpen = false">
-                        Scholar Login →
+                        Scholar Sign In →
                     </Link>
                 </div>
             </div>
@@ -273,7 +273,7 @@ const journalsList = [
             <slot />
         </main>
 
-        <!-- ── Ultra-Modern Multi-Column Academic Footer Matching Login Dark ── -->
+        <!-- ── Ultra-Modern Multi-Column Academic Footer ─────── -->
         <footer class="bg-[#070c18] text-slate-300 relative overflow-hidden selection:bg-rose-500 selection:text-white border-t border-slate-800">
             <!-- Glowing Multi-Color Top Edge Bar -->
             <div class="h-[2px] w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-rose-500"></div>
@@ -282,9 +282,9 @@ const journalsList = [
             <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-rose-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 relative z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
                 <!-- Top Brand Header in Footer -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 pb-10 mb-10 border-b border-slate-800/80">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 pb-12 mb-12 border-b border-slate-800/80">
                     <div class="flex items-center gap-3.5">
                         <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 via-blue-600 to-rose-600 p-0.5 shadow-lg shadow-indigo-500/20">
                             <div class="w-full h-full bg-[#0a101f] rounded-[10px] flex items-center justify-center font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-rose-300 text-base tracking-wider">
@@ -304,20 +304,20 @@ const journalsList = [
                     <div class="flex flex-wrap gap-3">
                         <Link
                             :href="route('manuscripts.create')"
-                            class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-rose-600 hover:from-indigo-500 hover:to-rose-500 text-white font-bold text-xs shadow-md shadow-indigo-500/20 transition"
+                            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-rose-600 hover:from-indigo-500 hover:to-rose-500 text-white font-bold text-xs shadow-md shadow-indigo-500/20 transition"
                         >
                             Submit Article →
                         </Link>
                         <Link
                             :href="route('proofreading.index')"
-                            class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-bold text-xs transition"
+                            class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-bold text-xs transition"
                         >
                             KD Proofreading
                         </Link>
                     </div>
                 </div>
 
-                <!-- 7 Columns Grid Matching Sitemap -->
+                <!-- 7 Columns Grid -->
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-8 text-xs">
                     <!-- Col 1: About -->
                     <div class="space-y-3">
@@ -397,14 +397,14 @@ const journalsList = [
                         </ul>
                     </div>
 
-                    <!-- Col 7: Scholar Portal & Policies -->
+                    <!-- Col 7: Scholar Portal -->
                     <div class="space-y-3">
                         <h4 class="text-white font-extrabold uppercase tracking-wider text-[11px] border-b border-slate-800 pb-2 flex items-center gap-1.5">
-                            <span class="text-amber-400">◆</span> Portal
+                            <span class="text-indigo-400">◆</span> Portal
                         </h4>
                         <ul class="space-y-2 text-slate-400">
                             <li><Link :href="route('login')" class="text-indigo-400 hover:text-indigo-300 font-bold hover:translate-x-0.5 inline-block transition">Scholar Sign In ↗</Link></li>
-                            <li><Link :href="route('webmail.index')" class="text-amber-400 hover:text-amber-300 font-bold hover:translate-x-0.5 inline-block transition">cPanel Webmail ↗</Link></li>
+                            <li><Link :href="route('webmail.index')" class="text-rose-400 hover:text-rose-300 font-bold hover:translate-x-0.5 inline-block transition">cPanel Webmail ↗</Link></li>
                             <li><Link :href="route('guidelines.show', 'authors')" class="hover:text-white hover:translate-x-0.5 inline-block transition">Author Guidelines</Link></li>
                             <li><Link :href="route('guidelines.show', 'editorial-policies')" class="hover:text-white hover:translate-x-0.5 inline-block transition">COPE Ethics</Link></li>
                             <li><Link :href="route('support.index')" class="hover:text-white hover:translate-x-0.5 inline-block transition">Help Desk</Link></li>
