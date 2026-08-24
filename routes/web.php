@@ -122,6 +122,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
 
     // Journals Management
+    Route::post('/journals/{journal}/toggle-status', [AdminJournalController::class, 'toggleStatus'])->name('journals.toggle_status');
     Route::resource('journals', AdminJournalController::class);
 
     // Articles Management

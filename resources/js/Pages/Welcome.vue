@@ -230,13 +230,17 @@ const topics = [
                             </div>
                         </div>
 
-                        <div class="pt-5 mt-5 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
-                            <Link :href="`/journals/${journal.slug}`" class="text-indigo-600 hover:text-indigo-800 flex items-center gap-1 whitespace-nowrap">
-                                <span>Browse Journal</span>
-                                <span class="font-mono">→</span>
-                            </Link>
-                            <Link :href="route('manuscripts.create')" class="text-slate-400 hover:text-slate-700 whitespace-nowrap">
-                                Submit Paper
+                        <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between gap-2 text-xs font-bold">
+                            <a
+                                :href="journal.effective_website_url || ('/journals/' + journal.slug)"
+                                :target="journal.website_url ? '_blank' : '_self'"
+                                class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold flex items-center gap-1 transition shadow-xs whitespace-nowrap text-[11px]"
+                            >
+                                <span>🌐 Journal Website</span>
+                                <span class="font-mono text-[10px]">↗</span>
+                            </a>
+                            <Link :href="`/submit?journal=${journal.slug}`" class="text-slate-500 hover:text-slate-900 whitespace-nowrap text-[11px]">
+                                Submit Paper →
                             </Link>
                         </div>
                     </div>

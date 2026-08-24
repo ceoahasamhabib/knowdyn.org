@@ -24,6 +24,7 @@ class AdminJournalController extends Controller
     public function index(Request $request): Response
     {
         $search = $request->input('search');
+        $status = $request->input('status');
 
         $query = Journal::withCount(['volumes', 'articles', 'editorialMembers'])
             ->orderBy('sort_order')
@@ -34,16 +35,30 @@ class AdminJournalController extends Controller
                 $q->where('title', 'like', "%{$search}%")
                   ->orWhere('short_title', 'like', "%{$search}%")
                   ->orWhere('issn_print', 'like', "%{$search}%")
-                  ->orWhere('issn_online', 'like', "%{$search}%");
+                  ->orWhere('issn_online', 'like', "%{$search}%")
+                  ->orWhere('website_url', 'like', "%{$search}%");
             });
+        }
+
+        if ($status && in_array($status, ['active', 'inactive', 'archived'])) {
+            $query->where('status', $status);
         }
 
         $journals = $query->paginate(15)->withQueryString();
 
+        $stats = [
+            'total' => Journal::count(),
+            'active' => Journal::where('status', 'active')->count(),
+            'inactive' => Journal::where('status', 'inactive')->count(),
+            'archived' => Journal::where('status', 'archived')->count(),
+        ];
+
         return Inertia::render('Admin/Journals/Index', [
             'journals' => $journals,
+            'stats' => $stats,
             'filters' => [
                 'search' => $search,
+                'status' => $status,
             ],
         ]);
     }
@@ -68,7 +83,7 @@ class AdminJournalController extends Controller
         $journal = $this->journalService->createJournal($validated, $settingsData);
 
         return redirect()->route('admin.journals.edit', $journal)
-            ->with('success', 'Journal created successfully.');
+            ->with('success', 'Journal created successfully with full academic metadata.');
     }
 
     /**
@@ -76,7 +91,7 @@ class AdminJournalController extends Controller
      */
     public function edit(Journal $journal): Response
     {
-        $journal->load(['settings', 'volumes.issues']);
+        $journal->load(['settings', 'volumes.issues', 'editorialMembers']);
 
         return Inertia::render('Admin/Journals/Edit', [
             'journal' => $journal,
@@ -94,7 +109,20 @@ class AdminJournalController extends Controller
 
         $this->journalService->updateJournal($journal, $validated, $settingsData);
 
-        return back()->with('success', 'Journal updated successfully.');
+        return back()->with('success', 'Journal and academic publishing configuration updated successfully.');
+    }
+
+    /**
+     * Toggle journal published status (Active / Inactive)
+     */
+    public function toggleStatus(Journal $journal): RedirectResponse
+    {
+        $newStatus = $journal->status === 'active' ? 'inactive' : 'active';
+        $journal->update(['status' => $newStatus]);
+
+        $statusLabel = $newStatus === 'active' ? 'Published (Live)' : 'Draft (Unpublished)';
+
+        return back()->with('success', "Journal status updated to {$statusLabel}.");
     }
 
     /**
